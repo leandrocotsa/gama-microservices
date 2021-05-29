@@ -1,4 +1,4 @@
-package com.thesis.gamamicroservices.promotionservice.dto;
+package com.thesis.gamamicroservices.promotionservice.dto.messages;
 
 import com.thesis.gamamicroservices.promotionservice.model.Promotion;
 import lombok.AllArgsConstructor;
@@ -10,11 +10,11 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class PromotionStartedMessageDTO {
+public class PromotionStartedMessage {
     private List<Integer> productsIds;
     private int discountAmount;
 
-    public PromotionStartedMessageDTO(Promotion promotion) {
+    public PromotionStartedMessage(Promotion promotion) {
         this.productsIds = promotion.getProductsIds();
         this.discountAmount = promotion.getDiscountAmount();
     }

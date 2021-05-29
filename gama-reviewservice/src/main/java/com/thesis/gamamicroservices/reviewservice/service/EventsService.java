@@ -1,5 +1,6 @@
 package com.thesis.gamamicroservices.reviewservice.service;
 
+import com.thesis.gamamicroservices.reviewservice.dto.messages.UserDeletedMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +14,8 @@ public class EventsService {
         reviewService.deleteReviewByProductId(productId);
     }
 
-    public void userDeleted(int userId) {
-        reviewService.deleteReviewByUserId(userId);
+    public void userDeleted(UserDeletedMessage userDeletedMessage) {
+        reviewService.deleteReviewByUserId(userDeletedMessage.getUserId());
     }
 
 

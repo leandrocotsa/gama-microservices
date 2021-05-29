@@ -20,9 +20,9 @@ public class EventConsumerConfiguration {
         return new FanoutExchange("productUpdatedExchange");
     }
 
-    @Bean(name="stockExchange")
-    public DirectExchange stockExchange() {
-        return new DirectExchange("stockExchange");
+    @Bean(name= "stockCheckExchange")
+    public DirectExchange stockCheckExchange() {
+        return new DirectExchange("stockCheckExchange");
     }
 
     @Bean(name="paymentConfirmedExchange")
@@ -68,7 +68,7 @@ public class EventConsumerConfiguration {
 
 
     @Bean
-    public Binding bindingInventory(@Qualifier("stockExchange") DirectExchange stockExchange) {
+    public Binding bindingInventory(@Qualifier("stockCheckExchange") DirectExchange stockExchange) {
         return BindingBuilder
                 .bind(inventoryQueue())
                 .to(stockExchange)

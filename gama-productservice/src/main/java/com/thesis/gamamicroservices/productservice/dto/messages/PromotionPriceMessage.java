@@ -1,4 +1,4 @@
-package com.thesis.gamamicroservices.productservice.dto;
+package com.thesis.gamamicroservices.productservice.dto.messages;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class PromotionPriceMessageDTO {
+public class PromotionPriceMessage {
     private Map<Integer,Double> productsIds_and_prices;
 
 }

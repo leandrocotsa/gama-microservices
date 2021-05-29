@@ -47,7 +47,7 @@ public class StripeService {
                         .setCurrency(paymentIntentDto.getCurrency())
                         .setAmount((long) ((order.get().getPrice()) * 100L))
                         .setDescription(paymentIntentDto.getDescription())
-                        .putMetadata("orderID", String.valueOf(order.get().getId()))
+                        .putMetadata("orderID", String.valueOf(order.get().getOrderId()))
                         .build();
 
                 RequestOptions options = RequestOptions
@@ -63,7 +63,7 @@ public class StripeService {
 
 
             } else {
-                throw new AlreadyPayedException("Order: " + order.get().getId() + " was already payed.");
+                throw new AlreadyPayedException("Order: " + order.get().getOrderId() + " was already payed.");
             }
         } else {
             throw new NoDataFoundException("Order: " + paymentIntentDto.getOrderID() + "does not exist");

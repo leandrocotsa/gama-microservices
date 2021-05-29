@@ -3,6 +3,8 @@ package com.thesis.gamamicroservices.reviewservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.thesis.gamamicroservices.reviewservice.dto.ReviewSetDTO;
+import com.thesis.gamamicroservices.reviewservice.dto.messages.ReviewCreatedMessage;
+import com.thesis.gamamicroservices.reviewservice.dto.messages.ReviewDeletedMessage;
 import com.thesis.gamamicroservices.reviewservice.model.Review;
 import com.thesis.gamamicroservices.reviewservice.repository.ReviewRepository;
 import com.thesis.gamamicroservices.reviewservice.security.JwtTokenUtil;
@@ -38,15 +40,7 @@ public class ReviewService {
         int userId = Integer.parseInt(jwtTokenUtil.getUserIdFromAuthorizationString(authorizationToken));
         Review r = new Review(reviewSetDTO, userId, productID);
         this.reviewRepository.save(r);
-
-        String reviewJson = null;
-        try {
-            reviewJson = objectWriter.writeValueAsString(r);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        rabbitTemplate.convertAndSend(exchange.getName(), "review", reviewJson);
+        rabbitTemplate.convertAndSend(exchange.getName(), "review.created", new ReviewCreatedMessage(r));
     }
 
 
@@ -55,11 +49,12 @@ public class ReviewService {
         Optional<Review> review = this.reviewRepository.findById(reviewID);
         if(review.isPresent() && review.get().getUserId() == userId) {
             reviewRepository.delete(review.get());
+            rabbitTemplate.convertAndSend(exchange.getName(), "review.deleted", new ReviewDeletedMessage(reviewID));
         }
         else {
             throw new NoDataFoundException("You cannot delete review of id " + reviewID);
         }
-        rabbitTemplate.convertAndSend(exchange.getName(), "review", reviewID);
+
     }
 
     @Transactional

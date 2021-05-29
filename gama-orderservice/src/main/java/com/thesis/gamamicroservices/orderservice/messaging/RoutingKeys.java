@@ -2,7 +2,7 @@ package com.thesis.gamamicroservices.orderservice.messaging;
 
 public enum RoutingKeys {
 
-    CREATED("order.created"), VERIFY_STOCK("order.verifystock");
+    ORDER_CONFIRMED("order.confirmed"), ORDER_CREATED("order.created"), ORDER_UPDATED("order.updated");
 
     String notation;
 

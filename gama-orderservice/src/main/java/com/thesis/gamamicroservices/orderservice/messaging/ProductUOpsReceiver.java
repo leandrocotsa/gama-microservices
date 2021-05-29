@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thesis.gamamicroservices.orderservice.dto.messages.ProductUpdatedMessage;
 import com.thesis.gamamicroservices.orderservice.dto.messages.PromotionPriceMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.PromotionPriceResetMessage;
 import com.thesis.gamamicroservices.orderservice.service.EventsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,20 +34,14 @@ public class ProductUOpsReceiver {
     // lets a single listener invoke different methods, based on the payload type of the incoming message (function arguments)
     //queria filtrar por routing key, neste momento tá tudo product.* e queria método para product.x e product.y
     @RabbitHandler
-    public void promotionStarted(String promotionPriceMessageJson) {
-        try {
-            PromotionPriceMessage p = objectMapper.readValue(promotionPriceMessageJson, PromotionPriceMessage.class);
-            logger.info(PROMOTION_STARTED_LOG, p.getProductsIds_and_prices());
-            eventsService.promotionStarted(p);
-        } catch(JsonProcessingException e) {
-            e.printStackTrace();
-        }
+    public void promotionStarted(PromotionPriceMessage promotionPriceMessage) {
+        eventsService.promotionStarted(promotionPriceMessage);
     }
 
     @RabbitHandler
-    public void promotionEnded(ArrayList<Integer> productsEnded) {
-        logger.info(PROMOTION_ENDED_LOG, productsEnded);
-        eventsService.promotionEnded(productsEnded);
+    public void promotionEnded(PromotionPriceResetMessage promotionPriceResetMessage) {
+        logger.info(PROMOTION_ENDED_LOG, promotionPriceResetMessage.getProductsEnded());
+        eventsService.promotionEnded(promotionPriceResetMessage);
     }
 
     @RabbitHandler

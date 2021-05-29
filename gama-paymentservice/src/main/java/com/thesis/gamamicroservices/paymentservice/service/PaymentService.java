@@ -48,5 +48,5 @@ public class PaymentService {
     }
 
     //caso o pagamento tenha falhado este vai-se manter em pending
-    //posso ter um scheduled job no orders service a ver se
+    //posso ter um scheduled job no orders service a ver se passaram x horas e o estado passa a expired
 }

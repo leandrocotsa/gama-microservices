@@ -1,6 +1,8 @@
 package com.thesis.gamamicroservices.orderservice.service;
 
 import com.thesis.gamamicroservices.orderservice.dto.messages.PromotionPriceMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.PromotionPriceResetMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.StockCheckMessage;
 import com.thesis.gamamicroservices.orderservice.model.foreign.ProductReplica;
 import com.thesis.gamamicroservices.orderservice.repository.ProductReplicaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +33,8 @@ public class EventsService {
         productRepository.deleteById(productId);
     }
 
-    public void stockChecked(Integer[] stockAvailable){
-        orderService.processStock(stockAvailable);
+    public void stockChecked(StockCheckMessage stockCheckMessage){
+        orderService.processStock(stockCheckMessage);
     }
 
     /**-----------UPDATE OPS----------**/
@@ -49,8 +51,8 @@ public class EventsService {
         }
     }
 
-    public void promotionEnded(List<Integer> productsEnded) {
-        for(int pId : productsEnded) {
+    public void promotionEnded(PromotionPriceResetMessage productsEnded) {
+        for(int pId : productsEnded.getProductsEnded()) {
             try {
                 ProductReplica product = orderService.getProductById(pId);
                 product.setPromotionPrice(null);

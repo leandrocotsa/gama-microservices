@@ -22,7 +22,7 @@ public class PaymentOpsReceiver {
     EventsService eventsService;
 
     @RabbitHandler
-    public void stockChecked(Integer orderId) {
+    public void paymentConfirmed(Integer orderId) {
         logger.info(PAYMENT_CONFIRMED_LOG, orderId);
         eventsService.paymentConfirmed(orderId);
     }

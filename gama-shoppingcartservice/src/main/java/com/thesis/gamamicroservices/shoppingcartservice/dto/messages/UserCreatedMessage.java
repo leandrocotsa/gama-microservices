@@ -1,4 +1,4 @@
-package com.thesis.gamamicroservices.userservice.dto;
+package com.thesis.gamamicroservices.shoppingcartservice.dto.messages;
 
 import com.thesis.gamamicroservices.userservice.model.User;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.sql.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class UserCreatedDTO {
+public class UserCreatedMessage {
     private int id;
     private String firstName;
     private String lastName;
@@ -18,7 +18,7 @@ public class UserCreatedDTO {
     private String phoneNumber;
     private String sex;
 
-    public UserCreatedDTO(User user) {
+    public UserCreatedMessage(User user) {
         this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();

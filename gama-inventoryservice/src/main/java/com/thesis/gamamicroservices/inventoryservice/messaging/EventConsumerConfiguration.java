@@ -21,7 +21,7 @@ public class EventConsumerConfiguration {
 
     @Bean(name="ordersExchange")
     public TopicExchange ordersExchange() {
-        return new TopicExchange("orderExchange");
+        return new TopicExchange("ordersExchange");
     }
 
     @Bean
@@ -56,7 +56,7 @@ public class EventConsumerConfiguration {
         return BindingBuilder
                 .bind(ordersQueue())
                 .to(eventExchange)
-                .with("order.verifystock");
+                .with("order.created");
     }
 
 /**

@@ -40,10 +40,10 @@ public class PaypalService {
             if(payment.isEmpty() || payment.get().getState() != PaymentStatus.PAYED) {
                 paymentService.addPaymentToOrder(paymentOrderSetDTO, order.get());
                 return createPayment(order.get().getPrice(), paymentOrderSetDTO.getCurrency(), paymentOrderSetDTO.getMethod(),
-                        paymentOrderSetDTO.getIntent(), paymentOrderSetDTO.getDescription(), "http://localhost:8090" + cancelURL + "?orderID=" + order.get().getId(),
-                        "http://localhost:8090" + successURL + "?orderID=" + order.get().getId());
+                        paymentOrderSetDTO.getIntent(), paymentOrderSetDTO.getDescription(), "http://localhost:8090" + cancelURL + "?orderID=" + order.get().getOrderId(),
+                        "http://localhost:8090" + successURL + "?orderID=" + order.get().getOrderId());
             } else {
-                throw new AlreadyPayedException("Order: " + order.get().getId() + " was already payed.");
+                throw new AlreadyPayedException("Order: " + order.get().getOrderId() + " was already payed.");
             }
         } else {
             throw new NoDataFoundException("Order: " + paymentOrderSetDTO.getOrderID() + "does not exist");

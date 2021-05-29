@@ -1,6 +1,7 @@
 package com.thesis.gamamicroservices.orderservice.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thesis.gamamicroservices.orderservice.dto.messages.StockCheckMessage;
 import com.thesis.gamamicroservices.orderservice.service.EventsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +14,7 @@ public class InventoryOpsReceiver {
 
     private Logger logger = LoggerFactory.getLogger(ProductCDOpsReceiver.class);
 
-    private static final String STOCK_CHECKED_LOG = "Order checked event. Stock was checked for Order: '{}";
+    private static final String STOCK_CHECKED_LOG = "Order checked event. Stock was checked for Order: {}";
 
     @Autowired
     ObjectMapper objectMapper;
@@ -25,9 +26,9 @@ public class InventoryOpsReceiver {
     // lets a single listener invoke different methods, based on the payload type of the incoming message (function arguments)
     //queria filtrar por routing key, neste momento tá tudo product.* e queria método para product.x e product.y
     @RabbitHandler
-    public void stockChecked(Integer[] stockAvailable) {
-        logger.info(STOCK_CHECKED_LOG, stockAvailable[0]);
-        eventsService.stockChecked(stockAvailable);
+    public void stockChecked(StockCheckMessage stockCheckMessage) {
+        logger.info(STOCK_CHECKED_LOG, stockCheckMessage.getOrderId());
+        eventsService.stockChecked(stockCheckMessage);
     }
 
     @RabbitHandler

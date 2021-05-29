@@ -2,9 +2,10 @@ package com.thesis.gamamicroservices.userservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.thesis.gamamicroservices.userservice.dto.UserCreatedDTO;
+import com.thesis.gamamicroservices.userservice.dto.messages.UserCreatedMessage;
 import com.thesis.gamamicroservices.userservice.dto.UserGetDTO;
 import com.thesis.gamamicroservices.userservice.dto.UserSetDTO;
+import com.thesis.gamamicroservices.userservice.dto.messages.UserDeletedMessage;
 import com.thesis.gamamicroservices.userservice.messaging.RoutingKeys;
 import com.thesis.gamamicroservices.userservice.model.Account;
 import com.thesis.gamamicroservices.userservice.model.Address;
@@ -88,13 +89,7 @@ public class UserService {
             //builder serve para evitar ter multiplos constructors com parametros diferentes cada
             //neste caso do user como apenas contruo de uma forma nem faz muito sentido mas whatever
             userRepository.save(createdUser);
-            try {
-                String userJson = objectWriter.writeValueAsString(new UserCreatedDTO(createdUser));
-                rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.CREATED.getNotation(), userJson);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-
+            rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.CREATED.getNotation(), new UserCreatedMessage(createdUser));
 
         }
     }
@@ -102,7 +97,7 @@ public class UserService {
     public void deleteUser(int id) throws NoDataFoundException {
         if(userRepository.existsById(id)) {
             userRepository.deleteById(id);
-            rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.DELETED.getNotation(), id);
+            rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.DELETED.getNotation(), new UserDeletedMessage(id));
         }
         else {
             throw new NoDataFoundException("There's no user with id " + id);
@@ -127,7 +122,7 @@ public class UserService {
             userRepository.save(createdUser);
 
             try {
-                String userJson = objectWriter.writeValueAsString(new UserCreatedDTO(createdUser));
+                String userJson = objectWriter.writeValueAsString(new UserCreatedMessage(createdUser));
                 rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.CREATED.getNotation(), userJson);
             } catch (JsonProcessingException e) {
                 e.printStackTrace();

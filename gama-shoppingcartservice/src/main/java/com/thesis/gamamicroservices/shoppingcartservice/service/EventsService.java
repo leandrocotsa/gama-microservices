@@ -1,6 +1,8 @@
 package com.thesis.gamamicroservices.shoppingcartservice.service;
 
 import com.thesis.gamamicroservices.shoppingcartservice.dto.UserCreatedDTO;
+import com.thesis.gamamicroservices.shoppingcartservice.dto.messages.UserCreatedMessage;
+import com.thesis.gamamicroservices.shoppingcartservice.dto.messages.UserDeletedMessage;
 import com.thesis.gamamicroservices.shoppingcartservice.repository.ShoppingCartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,12 +19,12 @@ public class EventsService {
         this.shoppingCartService = shoppingCartService;
     }
 
-    public void userCreated(UserCreatedDTO user) {
+    public void userCreated(UserCreatedMessage user) {
         shoppingCartService.createShoppingCartForUser(user.getId());
     }
 
-    public void userDeleted(int userId) {
-        shoppingCartRepository.deleteById(userId);
+    public void userDeleted(UserDeletedMessage userDeletedMessage) {
+        shoppingCartRepository.deleteById(userDeletedMessage.getUserId());
     }
 
 

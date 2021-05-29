@@ -1,5 +1,6 @@
 package com.thesis.gamamicroservices.orderservice.dto.messages;
 
+import com.thesis.gamamicroservices.orderservice.model.Order;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,4 +12,9 @@ import lombok.NoArgsConstructor;
 public class OrderStatusUpdateMessage {
     int orderId;
     String orderStatus; //rejected, expired, shipped
+
+    public OrderStatusUpdateMessage(Order order) {
+        this.orderId = order.getId();
+        this.orderStatus = order.getOrderStatus().name();
+    }
 }

@@ -63,6 +63,10 @@ public class EventProducerConfiguration {
         idClassMapping.put("brand_deleted", BrandDeletedMessage.class);
         idClassMapping.put("category_created", CategoryCreatedMessage.class);
         idClassMapping.put("category_deleted", CategoryDeletedMessage.class);
+        idClassMapping.put("promotion_started", PromotionStartedMessage.class);
+        idClassMapping.put("promotion_ended", PromotionEndedMessage.class);
+        idClassMapping.put("promotion_price_start", PromotionPriceMessage.class);
+        idClassMapping.put("promotion_price_reset", PromotionPriceResetMessage.class);
         classMapper.setIdClassMapping(idClassMapping);
         //classMapper.setIdClassMapping(Map.of("product_created", ProductCreatedDTO.class));
         messageConverter.setClassMapper(classMapper);

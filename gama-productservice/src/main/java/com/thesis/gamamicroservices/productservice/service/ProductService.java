@@ -3,12 +3,9 @@ package com.thesis.gamamicroservices.productservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.thesis.gamamicroservices.productservice.dto.SpecificationValueSetDTO;
-import com.thesis.gamamicroservices.productservice.dto.messages.ProductCreatedMessage;
+import com.thesis.gamamicroservices.productservice.dto.messages.*;
 import com.thesis.gamamicroservices.productservice.dto.ProductSetDTO;
-import com.thesis.gamamicroservices.productservice.dto.PromotionPriceMessageDTO;
 import com.thesis.gamamicroservices.productservice.dto.PromotionStartedMessageDTO;
-import com.thesis.gamamicroservices.productservice.dto.messages.ProductDeletedMessage;
-import com.thesis.gamamicroservices.productservice.dto.messages.ProductUpdatedMessage;
 import com.thesis.gamamicroservices.productservice.messaging.RoutingKeys;
 import com.thesis.gamamicroservices.productservice.model.*;
 import com.thesis.gamamicroservices.productservice.repository.ProductRepository;
@@ -20,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
 import javax.transaction.Transactional;
-import javax.validation.constraints.Null;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -183,17 +179,18 @@ public class ProductService {
                 e.printStackTrace();
             }
         }
+        rabbitTemplate.convertAndSend(updatedExchange.getName(), RoutingKeys.PROMOTION_STARTED.getNotation(), new PromotionPriceMessage(products_price));
 
         //promotionStarted.setProductsIds(productsId);
-
+/**
         try {
-            String productsJson = objectWriter.writeValueAsString(new PromotionPriceMessageDTO(products_price));
+            String productsJson = objectWriter.writeValueAsString(new PromotionPriceMessage(products_price));
             rabbitTemplate.convertAndSend(updatedExchange.getName(), RoutingKeys.PROMOTION_STARTED.getNotation(), productsJson);
         } catch (JsonProcessingException e){
             e.printStackTrace();
         }
 
-
+**/
     }
 
     public void resetPromotionPrice(List<Integer> productsEnded) {
@@ -207,7 +204,7 @@ public class ProductService {
             }
         }
         ArrayList<Integer> products = new ArrayList<>(productsEnded);
-        rabbitTemplate.convertAndSend(updatedExchange.getName(), RoutingKeys.PROMOTION_ENDED.getNotation(), products);
+        rabbitTemplate.convertAndSend(updatedExchange.getName(), RoutingKeys.PROMOTION_ENDED.getNotation(), new PromotionPriceResetMessage(products));
 
     }
 

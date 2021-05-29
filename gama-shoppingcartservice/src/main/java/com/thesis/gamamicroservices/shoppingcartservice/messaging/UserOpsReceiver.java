@@ -3,6 +3,8 @@ package com.thesis.gamamicroservices.shoppingcartservice.messaging;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thesis.gamamicroservices.shoppingcartservice.dto.UserCreatedDTO;
+import com.thesis.gamamicroservices.shoppingcartservice.dto.messages.UserCreatedMessage;
+import com.thesis.gamamicroservices.shoppingcartservice.dto.messages.UserDeletedMessage;
 import com.thesis.gamamicroservices.shoppingcartservice.service.EventsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,20 +29,15 @@ public class UserOpsReceiver {
 
 
     @RabbitHandler
-    public void userCreated(String userJSON) {
-        try {
-            UserCreatedDTO user = objectMapper.readValue(userJSON, UserCreatedDTO.class);
-            logger.info(USER_CREATED_LOG, user.getId());
-            eventsService.userCreated(user);
-        } catch(JsonProcessingException e) {
-            e.printStackTrace();
-        }
+    public void userCreated(UserCreatedMessage userCreatedMessage) {
+        logger.info(USER_CREATED_LOG, userCreatedMessage.getId());
+        eventsService.userCreated(userCreatedMessage);
     }
 
     @RabbitHandler
-    public void userDeleted(Integer userId) {
-        logger.info(USER_DELETED_LOG, userId);
-        eventsService.userDeleted(userId);
+    public void userDeleted(UserDeletedMessage userDeletedMessage) {
+        logger.info(USER_DELETED_LOG, userDeletedMessage.getUserId());
+        eventsService.userDeleted(userDeletedMessage);
     }
 
 

@@ -12,11 +12,11 @@ import lombok.NoArgsConstructor;
 //para o payment e view
 //fanout
 public class OrderConfirmedMessage {
-    private int id;
+    private int orderId;
     private Double price;
 
     public OrderConfirmedMessage(Order order) {
-        this.id = order.getId();
+        this.orderId = order.getId();
         this.price = order.calculateTotalValueToPay();
     }
 }

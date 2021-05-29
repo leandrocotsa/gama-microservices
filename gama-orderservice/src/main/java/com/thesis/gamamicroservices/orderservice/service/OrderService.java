@@ -4,7 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.thesis.gamamicroservices.orderservice.dto.*;
 import com.thesis.gamamicroservices.orderservice.dto.messages.OrderConfirmedMessage;
-import com.thesis.gamamicroservices.orderservice.dto.messages.OrderForStockCheckMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.OrderCreatedMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.OrderStatusUpdateMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.StockCheckMessage;
 import com.thesis.gamamicroservices.orderservice.messaging.RoutingKeys;
 import com.thesis.gamamicroservices.orderservice.model.Order;
 import com.thesis.gamamicroservices.orderservice.model.OrderItem;
@@ -29,7 +31,6 @@ public class OrderService {
 
     private final RabbitTemplate rabbitTemplate;
     private final Exchange ordersExchange;
-    private final Exchange orderPriceExchange;
     private final OrderRepository orderRepository;
     private final ProductReplicaRepository productOrderServiceRepository;
     private final ShippingService shippingService;
@@ -37,10 +38,9 @@ public class OrderService {
     private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    public OrderService(RabbitTemplate rabbitTemplate, @Qualifier("ordersExchange") Exchange ordersExchange, @Qualifier("orderPriceExchange") Exchange orderPriceExchange, OrderRepository orderRepository, ProductReplicaRepository productOrderServiceRepository, ShippingService shippingService, ObjectWriter objectWriter, JwtTokenUtil jwtTokenUtil) {
+    public OrderService(RabbitTemplate rabbitTemplate, @Qualifier("ordersExchange") Exchange ordersExchange, OrderRepository orderRepository, ProductReplicaRepository productOrderServiceRepository, ShippingService shippingService, ObjectWriter objectWriter, JwtTokenUtil jwtTokenUtil) {
         this.rabbitTemplate = rabbitTemplate;
         this.ordersExchange = ordersExchange;
-        this.orderPriceExchange = orderPriceExchange;
         this.orderRepository = orderRepository;
         this.productOrderServiceRepository = productOrderServiceRepository;
         this.shippingService = shippingService;
@@ -89,17 +89,18 @@ public class OrderService {
         Shipping shipping = new Shipping(shippingService.calculateShippingValue(newOrder.getTotalWeight(), orderSetDTO.getCountry()), "notes", orderSetDTO.getAddress(), orderSetDTO.getCountry());
         newOrder.addShippingToOrder(shipping);
         orderRepository.save(newOrder);
-        System.out.println("order saved");
+        //System.out.println("order saved");
 
         //rabbit convert and send
+        /**
         String orderJson = null;
         try {
             orderJson = objectWriter.writeValueAsString(new OrderForStockCheckMessage(newOrder));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-
-        rabbitTemplate.convertAndSend(ordersExchange.getName(), RoutingKeys.VERIFY_STOCK.getNotation(), orderJson);
+        **/
+        rabbitTemplate.convertAndSend(ordersExchange.getName(), RoutingKeys.ORDER_CREATED.getNotation(), new OrderCreatedMessage(newOrder));
 
     }
 
@@ -114,22 +115,27 @@ public class OrderService {
         }
     }
 
-    public void processStock(Integer[] stockAvailable) {
-        Integer id = stockAvailable[0];
+    public void processStock(StockCheckMessage stockCheckMessage) {
         Order o;
         try {
-            o = getOrderById(id);
+            o = getOrderById(stockCheckMessage.getOrderId());
         } catch (NoDataFoundException e) {
             e.printStackTrace();
             return;
         }
-        if(stockAvailable[1]==1) {
+        if(stockCheckMessage.isStockAvailable()) {
             o.setOrderStatus(OrderStatus.PENDING_PAYMENT);
+            orderRepository.save(o);
+            rabbitTemplate.convertAndSend(ordersExchange.getName(), RoutingKeys.ORDER_CONFIRMED.getNotation(), new OrderConfirmedMessage(o));
         } else {
             o.setOrderStatus(OrderStatus.REJECTED);
+            orderRepository.save(o);
+            rabbitTemplate.convertAndSend(ordersExchange.getName(), RoutingKeys.ORDER_UPDATED.getNotation(), new OrderStatusUpdateMessage(o));
         }
-        orderRepository.save(o);
 
+
+
+/**
         if(stockAvailable[1]==1) {
             String orderJson = null;
             try {
@@ -137,11 +143,11 @@ public class OrderService {
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
-            rabbitTemplate.convertAndSend(orderPriceExchange.getName(), "order", orderJson);
+            //rabbitTemplate.convertAndSend(orderPriceExchange.getName(), "order", orderJson);
+            rabbitTemplate.convertAndSend(ordersExchange.getName(), RoutingKeys.ORDER_CONFIRMED.getNotation(), new OrderConfirmedMessage(o));
         }
 
         //para a orderView
-/**
         String orderJson = null;
         try {
             orderJson = objectWriter.writeValueAsString(o);
@@ -150,7 +156,9 @@ public class OrderService {
         }
 
         rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.CREATED.getNotation(), orderJson); //erro de recursao infinita por order ter order items e order items ter order
-    **/
+
+
+**/
     }
 
 
@@ -158,6 +166,7 @@ public class OrderService {
         Order order = getOrderById(orderId);
         order.setOrderStatus(OrderStatus.APPROVED);
         orderRepository.save(order);
+        rabbitTemplate.convertAndSend(ordersExchange.getName(), RoutingKeys.ORDER_UPDATED.getNotation(), new OrderStatusUpdateMessage(order));
     }
 
 

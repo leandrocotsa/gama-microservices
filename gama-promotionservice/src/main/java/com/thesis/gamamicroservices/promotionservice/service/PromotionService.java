@@ -1,17 +1,17 @@
 package com.thesis.gamamicroservices.promotionservice.service;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.thesis.gamamicroservices.promotionservice.dto.ProductReferenceSetDTO;
 import com.thesis.gamamicroservices.promotionservice.dto.PromotionSetDTO;
-import com.thesis.gamamicroservices.promotionservice.dto.PromotionStartedMessageDTO;
+import com.thesis.gamamicroservices.promotionservice.dto.messages.*;
 import com.thesis.gamamicroservices.promotionservice.model.Promotion;
 import com.thesis.gamamicroservices.promotionservice.model.PromotionState;
 import com.thesis.gamamicroservices.promotionservice.repository.PromotionRepository;
 import org.springframework.amqp.core.Exchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
@@ -31,14 +31,16 @@ public class PromotionService {
     private final PromotionRepository promotionRepository;
     private final ObjectWriter objectWriter;
     private final RabbitTemplate rabbitTemplate;
-    private final Exchange exchange;
+    private final Exchange priceExchange;
+    private final Exchange promotionExchange;
 
     @Autowired
-    public PromotionService (PromotionRepository promotionRepository, ObjectWriter objectWriter, RabbitTemplate rabbitTemplate, Exchange exchange){
+    public PromotionService (PromotionRepository promotionRepository, ObjectWriter objectWriter, RabbitTemplate rabbitTemplate, @Qualifier("promotionPriceExchange") Exchange priceExchange, @Qualifier("promotionCUDExchange") Exchange promotionExchange){
         this.promotionRepository = promotionRepository;
         this.objectWriter = objectWriter;
         this.rabbitTemplate = rabbitTemplate;
-        this.exchange = exchange;
+        this.priceExchange = priceExchange;
+        this.promotionExchange = promotionExchange;
     }
 
 
@@ -66,6 +68,7 @@ public class PromotionService {
         }
         promotion.setProductsIds(products);
         promotionRepository.save(promotion);
+        rabbitTemplate.convertAndSend(promotionExchange.getName(), "promotion.created", new PromotionCreatedMessage(promotion));
 
         //ugh isto vai ter de ser uma mensagem tambem para a view ter as promotions
     }
@@ -77,8 +80,9 @@ public class PromotionService {
         Promotion p = this.getPromotionById(promotionID);
         promotionRepository.delete(p);
         if(p.getState().equals(PromotionState.ACTIVE)) {
-            rabbitTemplate.convertAndSend(exchange.getName(), "promotion.ended", p.getProductsIds());
+            rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion.ended", new PromotionEndedMessage(p.getProductsIds()));
         }
+        rabbitTemplate.convertAndSend(promotionExchange.getName(), "promotion.deleted", new PromotionDeletedMessage(promotionID));
     }
 
 
@@ -95,18 +99,24 @@ public class PromotionService {
                 throw new PromotionConflictException("Product " + pID + " is already associated with a promotion");
             }
         }
-        promotion.setProductsIds(Stream.concat(promotion.getProductsIds().stream(), newProducts.stream())
-                .collect(Collectors.toList()));
+        List<Integer> allProducts = Stream.concat(promotion.getProductsIds().stream(), newProducts.stream())
+                .collect(Collectors.toList());
+        promotion.setProductsIds(allProducts);
         promotionRepository.save(promotion);
 
         if(promotion.getState().equals(PromotionState.ACTIVE)) {
+            rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion.started", new PromotionStartedMessage(newProducts, promotion.getDiscountAmount()));
+
+            /**
             try {
-                String productsJson = objectWriter.writeValueAsString(new PromotionStartedMessageDTO(newProducts, promotion.getDiscountAmount()));
+                String productsJson = objectWriter.writeValueAsString(new PromotionStartedMessage(newProducts, promotion.getDiscountAmount()));
                 rabbitTemplate.convertAndSend(exchange.getName(), "promotion.started", productsJson);
             } catch (JsonProcessingException e){
                 e.printStackTrace();
             }
+             **/
         }
+        rabbitTemplate.convertAndSend(promotionExchange.getName(), "promotion.updated", new PromotionUpdatedMessage(allProducts));
 
     }
 
@@ -146,8 +156,9 @@ public class PromotionService {
         promotionRepository.save(promotion);
 
         if(promotion.getState().equals(PromotionState.ACTIVE)) {
-            rabbitTemplate.convertAndSend(exchange.getName(), "promotion.ended", removedProducts);
+            rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion.ended", new PromotionEndedMessage(removedProducts));
         }
+        rabbitTemplate.convertAndSend(promotionExchange.getName(), "promotion.updated", new PromotionUpdatedMessage(promotion.getProductsIds()));
 
         //SE A PROMOÇÃO JA ESTIVER EM ACTIVE ENTAO MANDO EVENTO, SENAO NAO
     }
@@ -158,7 +169,7 @@ public class PromotionService {
         p.setState(PromotionState.EXPIRED);
         this.promotionRepository.save(p);
         ArrayList<Integer> products = new ArrayList<>(p.getProductsIds());
-        rabbitTemplate.convertAndSend(exchange.getName(), "promotion.ended", products);
+        rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion.ended", new PromotionEndedMessage(products));
 
         //ENVIAR EVENTO COM LISTA DE IDS PARA O PRODUCT SERVICE MUDAR OS PREÇOS
     }
@@ -168,13 +179,15 @@ public class PromotionService {
         Promotion p = this.getPromotionById(promotionID);
         p.setState(PromotionState.ACTIVE);
         this.promotionRepository.save(p);
-
+        rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion.started", new PromotionStartedMessage(p));
+        /**
         try {
-            String productsJson = objectWriter.writeValueAsString(new PromotionStartedMessageDTO(p));
+            String productsJson = objectWriter.writeValueAsString(new PromotionStartedMessage(p));
             rabbitTemplate.convertAndSend(exchange.getName(), "promotion.started", productsJson);
         } catch (JsonProcessingException e){
             e.printStackTrace();
         }
+         **/
     }
 
     public void updatePromotion(Map<String, Object> updates, int promotion_id) throws NoDataFoundException, EditActivePromotionException {

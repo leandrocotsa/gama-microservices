@@ -2,6 +2,7 @@ package com.thesis.gamamicroservices.paymentservice.messaging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thesis.gamamicroservices.paymentservice.dto.messages.OrderConfirmedMessage;
 import com.thesis.gamamicroservices.paymentservice.model.foreign.ConfirmedOrderReplica;
 import com.thesis.gamamicroservices.paymentservice.service.EventsService;
 import org.slf4j.Logger;
@@ -10,12 +11,12 @@ import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@RabbitListener(queues="orderPaymentServiceQueue")
+@RabbitListener(queues="ordersPaymentServiceQueue")
 public class OrderConfirmedOpReceiver {
 
     private Logger logger = LoggerFactory.getLogger(OrderConfirmedOpReceiver.class);
 
-    private static final String ORDER_CONFIRMED_LOG = "Order confirmed event. Order: '{}";
+    private static final String ORDER_CONFIRMED_LOG = "Order confirmed event. Order: {}";
 
     @Autowired
     ObjectMapper objectMapper;
@@ -25,14 +26,18 @@ public class OrderConfirmedOpReceiver {
 
 
     @RabbitHandler
-    public void saveOrderConfirmed(String orderJSON) {
+    public void saveOrderConfirmed(OrderConfirmedMessage orderConfirmedMessage) {
+        eventsService.saveOrderConfirmed(orderConfirmedMessage);
+        logger.info(ORDER_CONFIRMED_LOG, orderConfirmedMessage.getOrderId());
+        /**
         try {
             ConfirmedOrderReplica order = objectMapper.readValue(orderJSON, ConfirmedOrderReplica.class);
-            logger.info(ORDER_CONFIRMED_LOG, order.getId());
+            logger.info(ORDER_CONFIRMED_LOG, order.getOrderId());
             eventsService.saveOrderConfirmed(order);
         } catch(JsonProcessingException e) {
             e.printStackTrace();
         }
+         **/
     }
 
     //as orders que estão payment pending há mais de 24 horas expiram e apaga-se daqui para impedir que seja paga

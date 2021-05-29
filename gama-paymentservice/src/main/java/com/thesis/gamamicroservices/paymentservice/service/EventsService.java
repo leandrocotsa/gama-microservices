@@ -1,5 +1,6 @@
 package com.thesis.gamamicroservices.paymentservice.service;
 
+import com.thesis.gamamicroservices.paymentservice.dto.messages.OrderConfirmedMessage;
 import com.thesis.gamamicroservices.paymentservice.model.foreign.ConfirmedOrderReplica;
 import com.thesis.gamamicroservices.paymentservice.repository.ConfirmedOrderReplicaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,9 @@ public class EventsService {
     }
 
 
-    public void saveOrderConfirmed(ConfirmedOrderReplica confirmedOrderReplica) {
-        confirmedOrderReplicaRepository.save(confirmedOrderReplica);
+    public void saveOrderConfirmed(OrderConfirmedMessage orderConfirmedMessage) {
+        ConfirmedOrderReplica orderReplica = new ConfirmedOrderReplica(orderConfirmedMessage);
+        confirmedOrderReplicaRepository.save(orderReplica);
     }
 
     public void orderExpired(int orderId) {

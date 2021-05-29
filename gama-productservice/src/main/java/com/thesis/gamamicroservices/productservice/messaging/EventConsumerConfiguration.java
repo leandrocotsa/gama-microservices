@@ -12,9 +12,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class EventConsumerConfiguration {
 
-    @Bean(name="promotionExchange")
-    public FanoutExchange promotionExchange() {
-        return new FanoutExchange("promotionExchange");
+    @Bean(name= "promotionPriceExchange")
+    public FanoutExchange promotionPriceExchange() {
+        return new FanoutExchange("promotionPriceExchange");
     }
 
     @Bean

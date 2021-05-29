@@ -28,13 +28,15 @@ public class EventProducerConfiguration {
 
     @Bean(name="ordersExchange")
     public Exchange ordersExchange() {
-        return new TopicExchange("orderExchange");
+        return new TopicExchange("ordersExchange");
     }
 
+    /*
     @Bean(name="orderPriceExchange")
     public DirectExchange orderPriceExchange() {
         return new DirectExchange("orderPriceExchange");
     }
+     */
 
 
     @Bean
@@ -55,6 +57,10 @@ public class EventProducerConfiguration {
         idClassMapping.put("product_updated", ProductUpdatedMessage.class);
         idClassMapping.put("order_created", OrderCreatedMessage.class);
         idClassMapping.put("order_confirmed", OrderConfirmedMessage.class);
+        idClassMapping.put("order_updated", OrderStatusUpdateMessage.class);
+        idClassMapping.put("stock_checked", StockCheckMessage.class);
+        idClassMapping.put("promotion_price_start", PromotionPriceMessage.class);
+        idClassMapping.put("promotion_price_reset", PromotionPriceResetMessage.class);
         classMapper.setIdClassMapping(idClassMapping);
         //classMapper.setIdClassMapping(Map.of("product_created", ProductCreatedDTO.class));
         messageConverter.setClassMapper(classMapper);

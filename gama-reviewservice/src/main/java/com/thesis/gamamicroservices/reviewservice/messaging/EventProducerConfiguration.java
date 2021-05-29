@@ -2,8 +2,7 @@ package com.thesis.gamamicroservices.reviewservice.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.thesis.gamamicroservices.reviewservice.dto.messages.ProductCreatedMessage;
-import com.thesis.gamamicroservices.reviewservice.dto.messages.ProductDeletedMessage;
+import com.thesis.gamamicroservices.reviewservice.dto.messages.*;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Exchange;
 import org.springframework.amqp.core.TopicExchange;
@@ -27,7 +26,7 @@ public class EventProducerConfiguration {
     }
 
     @Bean(name="reviewExchange")
-    public Exchange ordersExchange() {
+    public Exchange reviewExchange() {
         return new DirectExchange("reviewExchange");
     }
 
@@ -47,6 +46,9 @@ public class EventProducerConfiguration {
         Map<String, Class<?>> idClassMapping = new HashMap<>();
         idClassMapping.put("product_created", ProductCreatedMessage.class);
         idClassMapping.put("product_deleted", ProductDeletedMessage.class);
+        idClassMapping.put("review_created", ReviewCreatedMessage.class);
+        idClassMapping.put("review_deleted", ReviewDeletedMessage.class);
+        idClassMapping.put("user_deleted", UserDeletedMessage.class);
         classMapper.setIdClassMapping(idClassMapping);
         //classMapper.setIdClassMapping(Map.of("product_created", ProductCreatedDTO.class));
         messageConverter.setClassMapper(classMapper);

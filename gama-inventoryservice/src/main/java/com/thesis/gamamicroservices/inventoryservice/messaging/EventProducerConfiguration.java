@@ -2,8 +2,7 @@ package com.thesis.gamamicroservices.inventoryservice.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.thesis.gamamicroservices.inventoryservice.dto.messages.ProductCreatedMessage;
-import com.thesis.gamamicroservices.inventoryservice.dto.messages.ProductDeletedMessage;
+import com.thesis.gamamicroservices.inventoryservice.dto.messages.*;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -20,9 +19,14 @@ import java.util.Map;
 public class EventProducerConfiguration {
 
 
-    @Bean
-    public DirectExchange stockExchange() {
-        return new DirectExchange("stockExchange");
+    @Bean(name="stockCheckExchange")
+    public DirectExchange stockCheckExchange() {
+        return new DirectExchange("stockCheckExchange");
+    }
+
+    @Bean(name="inventoryWarehouseExchange")
+    public DirectExchange inventoryWarehouseExchange() {
+        return new DirectExchange("inventoryWarehouseExchange");
     }
 
     @Bean
@@ -46,6 +50,11 @@ public class EventProducerConfiguration {
         Map<String, Class<?>> idClassMapping = new HashMap<>();
         idClassMapping.put("product_created", ProductCreatedMessage.class);
         idClassMapping.put("product_deleted", ProductDeletedMessage.class);
+        idClassMapping.put("order_created", OrderCreatedMessage.class);
+        idClassMapping.put("stock_checked", StockCheckMessage.class);
+        idClassMapping.put("inventory_updated", StockCheckMessage.class);
+        idClassMapping.put("warehouse_created", WarehouseCreatedMessage.class);
+        idClassMapping.put("warehouse_deleted", WarehouseDeletedMessage.class);
         classMapper.setIdClassMapping(idClassMapping);
         //classMapper.setIdClassMapping(Map.of("product_created", ProductCreatedDTO.class));
         messageConverter.setClassMapper(classMapper);

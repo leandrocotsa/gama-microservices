@@ -2,13 +2,21 @@ package com.thesis.gamamicroservices.inventoryservice.service;
 
 import com.thesis.gamamicroservices.inventoryservice.dto.OrderForStockCheck;
 import com.thesis.gamamicroservices.inventoryservice.dto.WarehouseSetDTO;
+import com.thesis.gamamicroservices.inventoryservice.dto.messages.InventoryUpdatedMessage;
+import com.thesis.gamamicroservices.inventoryservice.dto.messages.OrderCreatedMessage;
+import com.thesis.gamamicroservices.inventoryservice.dto.messages.WarehouseCreatedMessage;
+import com.thesis.gamamicroservices.inventoryservice.dto.messages.WarehouseDeletedMessage;
+import com.thesis.gamamicroservices.inventoryservice.messaging.RoutingKeys;
 import com.thesis.gamamicroservices.inventoryservice.model.Inventory;
 import com.thesis.gamamicroservices.inventoryservice.model.Warehouse;
 import com.thesis.gamamicroservices.inventoryservice.model.foreign.ProductReplica;
 import com.thesis.gamamicroservices.inventoryservice.repository.InventoryRepository;
 import com.thesis.gamamicroservices.inventoryservice.repository.ProductReplicaRepository;
 import com.thesis.gamamicroservices.inventoryservice.repository.WarehouseRepository;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
@@ -25,12 +33,16 @@ public class InventoryService {
     private final InventoryRepository inventoryRepository;
     private final WarehouseRepository warehouseRepository;
     private final ProductReplicaRepository productRepository;
+    private final RabbitTemplate rabbitTemplate;
+    private final DirectExchange exchange;
 
     @Autowired
-    public InventoryService(InventoryRepository inventoryRepository, WarehouseRepository warehouseRepository, ProductReplicaRepository productRepository) {
+    public InventoryService(InventoryRepository inventoryRepository, WarehouseRepository warehouseRepository, ProductReplicaRepository productRepository, RabbitTemplate rabbitTemplate, @Qualifier("inventoryWarehouseExchange")DirectExchange exchange) {
         this.inventoryRepository = inventoryRepository;
         this.warehouseRepository = warehouseRepository;
         this.productRepository = productRepository;
+        this.rabbitTemplate = rabbitTemplate;
+        this.exchange = exchange;
     }
 
 
@@ -52,12 +64,15 @@ public class InventoryService {
         Optional<Inventory> inventory = inventoryRepository.findByProductIdAndWarehouseId(productID, warehouseID);
         if (inventory.isPresent()) {
             inventory.get().setStockAmount(inventory.get().getStockAmount() + qty);
+            inventoryRepository.save(inventory.get());
+            rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.INVENTORY_UPDATED.getNotation(), new InventoryUpdatedMessage(inventory.get()));
         } else {
             try {
                 Optional<Warehouse> w = warehouseRepository.findById(warehouseID);
                 if (w.isPresent()) {
                     Inventory newInv = new Inventory(w.get(), this.getProductById(productID), qty);
                     inventoryRepository.save(newInv);
+                    rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.INVENTORY_UPDATED.getNotation(), new InventoryUpdatedMessage(newInv));
                     //tambem devia fazer product.setInventories e colocar este novo e fazer save do produto
                     //alias, como é cascade ate bastava guardar só aí que o inventory tambem ia ser persistido
                     //mas como o inventory é o owning side funciona, mas se tiver bugs mudo
@@ -75,13 +90,14 @@ public class InventoryService {
         if (inventory.isPresent()) {
             inventory.get().setStockAmount(qty);
             inventoryRepository.save(inventory.get());
+            rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.INVENTORY_UPDATED.getNotation(), new InventoryUpdatedMessage(inventory.get()));
         } else {
             throw new NoDataFoundException("There's no inventory for Product with id " + productID + " and wahrehouse with id" + warehouseID);
         }
     }
 
 
-    public void reserveStock(OrderForStockCheck order) throws NoStockException, NoDataFoundException {
+    public void reserveStock(OrderCreatedMessage order) throws NoStockException, NoDataFoundException {
         //loop a ver se todos têm stock e outro loop a retirar um e guardar
 
         for (Map.Entry<Integer, Integer> entry : order.getProducts_qty().entrySet()) {
@@ -92,7 +108,7 @@ public class InventoryService {
         }
         for (Map.Entry<Integer, Integer> entry : order.getProducts_qty().entrySet()) {
             int qtyLeft = entry.getValue();
-            for (int y = 0; y < getProductById(entry.getKey()).getInventories().size(); ++y) { //teve que ser loop assim pq com iterator na podia modificar elemento enquanto terava
+            for (int y = 0; y < getProductById(entry.getKey()).getInventories().size(); ++y) { //teve que ser loop assim pq com iterator na podia modificar elemento enquanto iterava
                 if (qtyLeft == 0) {
                     return;
                 }
@@ -107,6 +123,7 @@ public class InventoryService {
                     //com um thread constantemente a verificar se stock=0?
                 }
                 this.inventoryRepository.save(i);
+                rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.INVENTORY_UPDATED.getNotation(), new InventoryUpdatedMessage(i));
                 //tenho que por numa string na order de quais armazens stock foi retirado
             }
 
@@ -121,6 +138,7 @@ public class InventoryService {
         if (existingWarehouse.isEmpty()) {
             Warehouse warehouse = new Warehouse((warehouseSetDTO));
             warehouseRepository.save(warehouse);
+            rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.WAREHOUSE_CREATED.getNotation(), new WarehouseCreatedMessage(warehouse));
         } else {
             throw new AlreadyExistsException("There's a Warehouse with that name");
         }
@@ -128,9 +146,9 @@ public class InventoryService {
 
 
     public void deleteWarehouse(int id) throws NoDataFoundException {
-
         if (warehouseRepository.existsById(id)) { //evita que tenha de fazer um fetch extra
             warehouseRepository.deleteById(id);
+            rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.WAREHOUSE_DELETED.getNotation(), new WarehouseDeletedMessage(id));
         } else {
             throw new NoDataFoundException("There's no Warehouse with that id");
         }
