@@ -1,20 +1,6 @@
 package com.thesis.gamamicroservices.productservice;
 
 
-import com.thesis.gamamicroservices.productservice.dto.CategorySetDTO;
-import com.thesis.gamamicroservices.productservice.model.Specification;
-import com.thesis.gamamicroservices.productservice.service.BrandService;
-import com.thesis.gamamicroservices.productservice.service.CategoryService;
-import com.thesis.gamamicroservices.productservice.service.ProductService;
-import com.thesis.gamamicroservices.productservice.service.SpecificationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
 @Configuration

@@ -29,16 +29,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final JwtTokenUtil jwtTokenUtil;
     private final PasswordEncoder bcryptEncoder;
-    private final ObjectWriter objectWriter;
     private final RabbitTemplate rabbitTemplate;
     private final Exchange exchange;
 
     @Autowired
-    public UserService(UserRepository userRepository, JwtTokenUtil jwtTokenUtil, PasswordEncoder bcryptEncoder, ObjectWriter objectWriter, RabbitTemplate rabbitTemplate, Exchange exchange) {
+    public UserService(UserRepository userRepository, JwtTokenUtil jwtTokenUtil, PasswordEncoder bcryptEncoder, RabbitTemplate rabbitTemplate, Exchange exchange) {
         this.userRepository = userRepository;
         this.jwtTokenUtil = jwtTokenUtil;
         this.bcryptEncoder = bcryptEncoder;
-        this.objectWriter = objectWriter;
         this.rabbitTemplate = rabbitTemplate;
         this.exchange = exchange;
     }
@@ -94,13 +92,14 @@ public class UserService {
         }
     }
 
-    public void deleteUser(int id) throws NoDataFoundException {
-        if(userRepository.existsById(id)) {
-            userRepository.deleteById(id);
-            rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.DELETED.getNotation(), new UserDeletedMessage(id));
+    public void deleteUser(String authorizationToken) throws NoDataFoundException {
+        int userId = Integer.parseInt(jwtTokenUtil.getUserIdFromAuthorizationString(authorizationToken));
+        if(userRepository.existsById(userId)) {
+            userRepository.deleteById(userId);
+            rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.DELETED.getNotation(), new UserDeletedMessage(userId));
         }
         else {
-            throw new NoDataFoundException("There's no user with id " + id);
+            throw new NoDataFoundException("There's no user with id " + userId);
         }
     }
 
@@ -121,12 +120,8 @@ public class UserService {
             //neste caso do user como apenas contruo de uma forma nem faz muito sentido mas whatever
             userRepository.save(createdUser);
 
-            try {
-                String userJson = objectWriter.writeValueAsString(new UserCreatedMessage(createdUser));
-                rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.CREATED.getNotation(), userJson);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
+            userRepository.save(createdUser);
+            rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.CREATED.getNotation(), new UserCreatedMessage(createdUser));
         }
     }
 }

@@ -49,6 +49,7 @@ public class EventProducerConfiguration {
         idClassMapping.put("review_created", ReviewCreatedMessage.class);
         idClassMapping.put("review_deleted", ReviewDeletedMessage.class);
         idClassMapping.put("user_deleted", UserDeletedMessage.class);
+        idClassMapping.put("user_created", UserCreatedMessage.class);
         classMapper.setIdClassMapping(idClassMapping);
         //classMapper.setIdClassMapping(Map.of("product_created", ProductCreatedDTO.class));
         messageConverter.setClassMapper(classMapper);

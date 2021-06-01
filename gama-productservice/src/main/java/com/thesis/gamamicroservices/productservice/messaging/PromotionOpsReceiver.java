@@ -1,16 +1,14 @@
 package com.thesis.gamamicroservices.productservice.messaging;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thesis.gamamicroservices.productservice.dto.PromotionStartedMessageDTO;
+import com.thesis.gamamicroservices.productservice.dto.messages.consumed.PromotionEndedMessage;
+import com.thesis.gamamicroservices.productservice.dto.messages.consumed.PromotionStartedMessage;
 import com.thesis.gamamicroservices.productservice.service.EventsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.ArrayList;
 
 
 @RabbitListener(queues="promotionProductServiceQueue")
@@ -29,20 +27,15 @@ public class PromotionOpsReceiver {
 
 
     @RabbitHandler
-    public void promotionStarted(String promotionStartedJson) {
-        try {
-            PromotionStartedMessageDTO p = objectMapper.readValue(promotionStartedJson, PromotionStartedMessageDTO.class);
-            eventsService.promotionStarted(p);
-            logger.info(PROMOTION_STARTED_LOG, p.getProductsIds());
-        } catch(JsonProcessingException e) {
-            e.printStackTrace();
-        }
+    public void promotionStarted(PromotionStartedMessage promotionStarted) {
+        eventsService.promotionStarted(promotionStarted);
+        logger.info(PROMOTION_STARTED_LOG, promotionStarted.getProductsIds());
     }
 
     @RabbitHandler
-    public void promotionEnded(ArrayList<Integer> productsEnded) {
-        eventsService.promotionEnded(productsEnded);
-        logger.info(PROMOTION_ENDED_LOG, productsEnded);
+    public void promotionEnded(PromotionEndedMessage promotionEndedMessage) {
+        eventsService.promotionEnded(promotionEndedMessage);
+        logger.info(PROMOTION_ENDED_LOG, promotionEndedMessage.getProductsEnded());
     }
 
 /**

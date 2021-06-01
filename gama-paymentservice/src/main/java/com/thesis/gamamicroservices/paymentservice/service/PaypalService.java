@@ -40,8 +40,10 @@ public class PaypalService {
             if(payment.isEmpty() || payment.get().getState() != PaymentStatus.PAYED) {
                 paymentService.addPaymentToOrder(paymentOrderSetDTO, order.get());
                 return createPayment(order.get().getPrice(), paymentOrderSetDTO.getCurrency(), paymentOrderSetDTO.getMethod(),
-                        paymentOrderSetDTO.getIntent(), paymentOrderSetDTO.getDescription(), "http://localhost:8090" + cancelURL + "?orderID=" + order.get().getOrderId(),
-                        "http://localhost:8090" + successURL + "?orderID=" + order.get().getOrderId());
+                        paymentOrderSetDTO.getIntent(), paymentOrderSetDTO.getDescription(), "http://192.168.1.174:8080" + cancelURL + "?orderID=" + order.get().getOrderId(),
+                        "http://192.168.1.174:8080" + successURL + "?orderID=" + order.get().getOrderId());
+                //aqui tenho de por o ip da aplicação, o futuro virtual ip
+                //como ainda nao o tenho vou por o ip de um nó
             } else {
                 throw new AlreadyPayedException("Order: " + order.get().getOrderId() + " was already payed.");
             }

@@ -2,9 +2,9 @@ package com.thesis.gamamicroservices.orderservice.messaging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thesis.gamamicroservices.orderservice.dto.messages.ProductUpdatedMessage;
-import com.thesis.gamamicroservices.orderservice.dto.messages.PromotionPriceMessage;
-import com.thesis.gamamicroservices.orderservice.dto.messages.PromotionPriceResetMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.consumed.ProductUpdatedMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.consumed.PromotionPriceMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.consumed.PromotionPriceResetMessage;
 import com.thesis.gamamicroservices.orderservice.service.EventsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +49,15 @@ public class ProductUOpsReceiver {
         if(productUpdated.getUpdates().containsKey("price")) {
             Double price = (Double)productUpdated.getUpdates().get("price");
             int productId = (Integer)productUpdated.getUpdates().get("id");
-            logger.info(PRODUCT_PRICE_UPDATED_LOG, productId);
-            eventsService.priceUpdated(productId, price);
+            if(productUpdated.getUpdates().containsKey("promotionPrice")) {
+                Double promotionPrice = (Double)productUpdated.getUpdates().get("promotionPrice");
+                logger.info(PRODUCT_PRICE_UPDATED_LOG, productId);
+                eventsService.priceUpdated(productId, price, promotionPrice);
+            } else {
+                logger.info(PRODUCT_PRICE_UPDATED_LOG, productId);
+                eventsService.priceUpdated(productId, price);
+            }
+
         }
     }
 

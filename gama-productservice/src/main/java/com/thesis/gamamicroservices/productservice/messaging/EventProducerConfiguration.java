@@ -2,8 +2,9 @@ package com.thesis.gamamicroservices.productservice.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.thesis.gamamicroservices.productservice.dto.messages.*;
-import com.thesis.gamamicroservices.productservice.model.Brand;
+import com.thesis.gamamicroservices.productservice.dto.messages.consumed.PromotionEndedMessage;
+import com.thesis.gamamicroservices.productservice.dto.messages.consumed.PromotionStartedMessage;
+import com.thesis.gamamicroservices.productservice.dto.messages.produced.*;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Exchange;
 import org.springframework.amqp.core.FanoutExchange;

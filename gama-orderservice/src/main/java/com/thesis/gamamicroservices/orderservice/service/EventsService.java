@@ -1,8 +1,8 @@
 package com.thesis.gamamicroservices.orderservice.service;
 
-import com.thesis.gamamicroservices.orderservice.dto.messages.PromotionPriceMessage;
-import com.thesis.gamamicroservices.orderservice.dto.messages.PromotionPriceResetMessage;
-import com.thesis.gamamicroservices.orderservice.dto.messages.StockCheckMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.consumed.PromotionPriceMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.consumed.PromotionPriceResetMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.consumed.StockCheckMessage;
 import com.thesis.gamamicroservices.orderservice.model.foreign.ProductReplica;
 import com.thesis.gamamicroservices.orderservice.repository.ProductReplicaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +72,19 @@ public class EventsService {
             e.printStackTrace();
         }
     }
+
+
+    public void priceUpdated(int productId, Double newPrice, Double newPromotionPrice) {
+        try {
+            ProductReplica product = orderService.getProductById(productId);
+            product.setPrice(newPrice);
+            product.setPromotionPrice(newPromotionPrice);
+            productRepository.save(product);
+        } catch (NoDataFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
     public void paymentConfirmed(int orderId) {

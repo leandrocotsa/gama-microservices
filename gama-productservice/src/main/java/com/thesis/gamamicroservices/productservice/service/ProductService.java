@@ -3,9 +3,9 @@ package com.thesis.gamamicroservices.productservice.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.thesis.gamamicroservices.productservice.dto.SpecificationValueSetDTO;
-import com.thesis.gamamicroservices.productservice.dto.messages.*;
 import com.thesis.gamamicroservices.productservice.dto.ProductSetDTO;
-import com.thesis.gamamicroservices.productservice.dto.PromotionStartedMessageDTO;
+import com.thesis.gamamicroservices.productservice.dto.messages.consumed.PromotionStartedMessage;
+import com.thesis.gamamicroservices.productservice.dto.messages.produced.*;
 import com.thesis.gamamicroservices.productservice.messaging.RoutingKeys;
 import com.thesis.gamamicroservices.productservice.model.*;
 import com.thesis.gamamicroservices.productservice.repository.ProductRepository;
@@ -106,6 +106,7 @@ public class ProductService {
     public void editProduct(Map<String, Object> updates, int productId) throws NoDataFoundException {
         Map<String, Object> duplicated_updates = new HashMap<>(updates);
         Product product = this.getProductById(productId);
+        Double productOldPrice = product.getPrice();
             try {
                 // Map key is field name, v is value
                 updates.forEach((k, v) -> {
@@ -120,32 +121,34 @@ public class ProductService {
                         }
                     }
 
-                    /**
-                    if(k.equals("price")) {
-                        Double[] newPrice = new Double[2];
-                        newPrice[0] = (double) productId;
-                        newPrice[1] = (double)v;
-                        //Map<Integer,Double> newPrice = new HashMap<>();
-                        //newPrice.put(id, (Double)v);
-                        rabbitTemplate.convertAndSend(updatedExchange.getName(), RoutingKeys.PRICE_UPDATED.getNotation(), newPrice);
-                    } else
-                        **/
-                    if (k.equals("brandId")) {
-                        try {
-                            Brand brand = brandService.findById((Integer)v);
-                            product.setBrand(brand);
-                        } catch (NoDataFoundException e) {
-                            duplicated_updates.remove(k);
-                            throw new NullPointerException();
-                        }
-                    } else if (k.equals("categoryId")) {
-                        try {
-                            Category category = categoryService.findById((Integer)v);
-                            product.setCategory(category);
-                        } catch (NoDataFoundException e) {
-                            duplicated_updates.remove(k);
-                            throw new NullPointerException();
-                        }
+
+                    switch (k) {
+                        case "price":
+                            if (product.getPromotionPrice() != null) {
+                                int discountAmount = (int) ((product.getPromotionPrice() * 100) / productOldPrice);
+                                Double newPromotionPrice = product.getPrice() * discountAmount;
+                                product.setPromotionPrice(newPromotionPrice);
+                                duplicated_updates.put("promotionPrice", newPromotionPrice);
+                            }
+                            break;
+                        case "brandId":
+                            try {
+                                Brand brand = brandService.findById((Integer) v);
+                                product.setBrand(brand);
+                            } catch (NoDataFoundException e) {
+                                duplicated_updates.remove(k);
+                                throw new NullPointerException();
+                            }
+                            break;
+                        case "categoryId":
+                            try {
+                                Category category = categoryService.findById((Integer) v);
+                                product.setCategory(category);
+                            } catch (NoDataFoundException e) {
+                                duplicated_updates.remove(k);
+                                throw new NullPointerException();
+                            }
+                            break;
                     }
                 });
                 productRepository.save(product);
@@ -164,7 +167,7 @@ public class ProductService {
     }
 
 
-    public void setPromotionPrice(PromotionStartedMessageDTO promotionStarted) {
+    public void setPromotionPrice(PromotionStartedMessage promotionStarted) {
         //ArrayList<Integer> productsId = new ArrayList<>();
         Map<Integer,Double> products_price = new HashMap<>();
         for(int productId : promotionStarted.getProductsIds()) {

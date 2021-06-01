@@ -1,9 +1,8 @@
 package com.thesis.gamamicroservices.orderservice.messaging;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thesis.gamamicroservices.orderservice.dto.messages.ProductCreatedMessage;
-import com.thesis.gamamicroservices.orderservice.dto.messages.ProductDeletedMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.consumed.ProductCreatedMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.consumed.ProductDeletedMessage;
 import com.thesis.gamamicroservices.orderservice.model.foreign.ProductReplica;
 import com.thesis.gamamicroservices.orderservice.service.EventsService;
 import org.slf4j.Logger;

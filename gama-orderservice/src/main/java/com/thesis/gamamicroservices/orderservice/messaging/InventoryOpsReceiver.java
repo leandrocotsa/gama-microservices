@@ -1,7 +1,7 @@
 package com.thesis.gamamicroservices.orderservice.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thesis.gamamicroservices.orderservice.dto.messages.StockCheckMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.consumed.StockCheckMessage;
 import com.thesis.gamamicroservices.orderservice.service.EventsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,13 +30,5 @@ public class InventoryOpsReceiver {
         logger.info(STOCK_CHECKED_LOG, stockCheckMessage.getOrderId());
         eventsService.stockChecked(stockCheckMessage);
     }
-
-    @RabbitHandler
-    public void stockChecked(String lol) {
-        System.out.println(lol);
-    }
-
-
-
 
 }

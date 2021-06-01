@@ -2,6 +2,7 @@ package com.thesis.gamamicroservices.reviewservice.messaging;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thesis.gamamicroservices.reviewservice.dto.messages.UserCreatedMessage;
 import com.thesis.gamamicroservices.reviewservice.dto.messages.UserDeletedMessage;
 import com.thesis.gamamicroservices.reviewservice.service.EventsService;
 import org.slf4j.Logger;
@@ -28,6 +29,10 @@ public class UserOpsReceiver {
     public void userDeleted(UserDeletedMessage userDeletedMessage) {
         logger.info(USER_DELETED_LOG, userDeletedMessage.getUserId());
         eventsService.userDeleted(userDeletedMessage);
+    }
+
+    @RabbitHandler
+    public void userCreated(UserCreatedMessage userCreatedMessage) {
     }
 
 }

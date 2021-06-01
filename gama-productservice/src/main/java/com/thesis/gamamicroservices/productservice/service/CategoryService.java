@@ -1,8 +1,8 @@
 package com.thesis.gamamicroservices.productservice.service;
 
 import com.thesis.gamamicroservices.productservice.dto.CategorySetDTO;
-import com.thesis.gamamicroservices.productservice.dto.messages.CategoryCreatedMessage;
-import com.thesis.gamamicroservices.productservice.dto.messages.CategoryDeletedMessage;
+import com.thesis.gamamicroservices.productservice.dto.messages.produced.CategoryCreatedMessage;
+import com.thesis.gamamicroservices.productservice.dto.messages.produced.CategoryDeletedMessage;
 import com.thesis.gamamicroservices.productservice.messaging.RoutingKeys;
 import com.thesis.gamamicroservices.productservice.model.Category;
 import com.thesis.gamamicroservices.productservice.model.Product;

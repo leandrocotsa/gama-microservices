@@ -1,10 +1,9 @@
 package com.thesis.gamamicroservices.productservice.service;
 
-import com.thesis.gamamicroservices.productservice.dto.PromotionStartedMessageDTO;
+import com.thesis.gamamicroservices.productservice.dto.messages.consumed.PromotionEndedMessage;
+import com.thesis.gamamicroservices.productservice.dto.messages.consumed.PromotionStartedMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class EventsService {
@@ -16,12 +15,12 @@ public class EventsService {
         this.productService = productService;
     }
 
-    public void promotionStarted(PromotionStartedMessageDTO promotionStarted) {
+    public void promotionStarted(PromotionStartedMessage promotionStarted) {
             productService.setPromotionPrice(promotionStarted);
     }
 
-    public void promotionEnded(List<Integer> productsEnded) {
-            productService.resetPromotionPrice(productsEnded);
+    public void promotionEnded(PromotionEndedMessage promotionEndedMessage) {
+            productService.resetPromotionPrice(promotionEndedMessage.getProductsEnded());
     }
 /**
     public void productRemovedFromActivePromotion(int productId) {

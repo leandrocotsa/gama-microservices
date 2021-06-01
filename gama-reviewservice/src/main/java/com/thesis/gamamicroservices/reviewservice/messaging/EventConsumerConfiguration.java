@@ -10,20 +10,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class EventConsumerConfiguration {
 
-    @Bean(name="productsExchange")
-    public FanoutExchange productsPubSubExchange() {
-        return new FanoutExchange("productExchange");
+    @Bean(name="productCreatedDeletedExchange")
+    public FanoutExchange productCreatedDeletedExchange() {
+        return new FanoutExchange("productCreatedDeletedExchange");
     }
 
-    @Bean(name="usersExchange")
-    public FanoutExchange usersPubSubExchange() {
-        return new FanoutExchange("usersExchange");
-    }
-
-
-    @Bean
-    public Queue productsQueue() {
-        return new Queue("productsReviewServiceQueue");
+    @Bean(name="userExchange")
+    public FanoutExchange userExchange() {
+        return new FanoutExchange("userExchange");
     }
 
     @Bean
@@ -31,20 +25,25 @@ public class EventConsumerConfiguration {
         return new Queue("usersReviewServiceQueue");
     }
 
+    @Bean
+    public Queue productsCreatedDeletedQueue() {
+        return new Queue("productsReviewServiceQueue");
+    }
 
     @Bean
-    public Binding bindingProducts(@Qualifier("productsExchange") FanoutExchange productsExchange) {
+    public Binding bindingUsers(@Qualifier("userExchange")FanoutExchange userExchange) {
         return BindingBuilder
-                .bind(productsQueue())
+                .bind(usersQueue())
+                .to(userExchange);
+    }
+
+    @Bean
+    public Binding bindingProducts(@Qualifier("productCreatedDeletedExchange") FanoutExchange productsExchange) {
+        return BindingBuilder
+                .bind(productsCreatedDeletedQueue())
                 .to(productsExchange);
     }
 
-    @Bean
-    public Binding bindingUsers(@Qualifier("usersExchange") FanoutExchange usersExchange) {
-        return BindingBuilder
-                .bind(productsQueue())
-                .to(usersExchange);
-    }
 
     @Bean
     public ProductOpsReceiver productEventsReceiver() {

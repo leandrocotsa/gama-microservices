@@ -2,9 +2,10 @@ package com.thesis.gamamicroservices.orderservice.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.thesis.gamamicroservices.orderservice.dto.messages.*;
-import com.thesis.gamamicroservices.orderservice.service.OrderService;
-import org.springframework.amqp.core.DirectExchange;
+import com.thesis.gamamicroservices.orderservice.dto.messages.consumed.*;
+import com.thesis.gamamicroservices.orderservice.dto.messages.produced.OrderConfirmedMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.produced.OrderCreatedMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.produced.OrderStatusUpdateMessage;
 import org.springframework.amqp.core.Exchange;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -61,6 +62,7 @@ public class EventProducerConfiguration {
         idClassMapping.put("stock_checked", StockCheckMessage.class);
         idClassMapping.put("promotion_price_start", PromotionPriceMessage.class);
         idClassMapping.put("promotion_price_reset", PromotionPriceResetMessage.class);
+        idClassMapping.put("payment_confirmed", PaymentCreatedMessage.class);
         classMapper.setIdClassMapping(idClassMapping);
         //classMapper.setIdClassMapping(Map.of("product_created", ProductCreatedDTO.class));
         messageConverter.setClassMapper(classMapper);

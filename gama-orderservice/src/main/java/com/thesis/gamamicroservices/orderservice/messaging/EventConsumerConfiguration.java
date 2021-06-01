@@ -26,8 +26,8 @@ public class EventConsumerConfiguration {
     }
 
     @Bean(name="paymentConfirmedExchange")
-    public DirectExchange paymentConfirmedExchange() {
-        return new DirectExchange("paymentConfirmedExchange");
+    public FanoutExchange paymentConfirmedExchange() {
+        return new FanoutExchange("paymentConfirmedExchange");
     }
 
     @Bean
@@ -76,11 +76,10 @@ public class EventConsumerConfiguration {
     }
 
     @Bean
-    public Binding bindingPaymentConfirmed(@Qualifier("paymentConfirmedExchange") DirectExchange paymentExchange) {
+    public Binding bindingPaymentConfirmed(@Qualifier("paymentConfirmedExchange") FanoutExchange paymentExchange) {
         return BindingBuilder
                 .bind(paymentQueue())
-                .to(paymentExchange)
-                .with("payment.confirmed");
+                .to(paymentExchange);
     }
 
 

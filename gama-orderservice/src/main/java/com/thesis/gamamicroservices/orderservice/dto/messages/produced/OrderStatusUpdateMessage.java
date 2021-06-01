@@ -1,4 +1,4 @@
-package com.thesis.gamamicroservices.orderservice.dto.messages;
+package com.thesis.gamamicroservices.orderservice.dto.messages.produced;
 
 import com.thesis.gamamicroservices.orderservice.model.Order;
 import lombok.AllArgsConstructor;

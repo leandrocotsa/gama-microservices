@@ -1,4 +1,4 @@
-package com.thesis.gamamicroservices.productservice.dto.messages;
+package com.thesis.gamamicroservices.productservice.dto.messages.produced;
 
 import com.thesis.gamamicroservices.productservice.model.Brand;
 import lombok.AllArgsConstructor;

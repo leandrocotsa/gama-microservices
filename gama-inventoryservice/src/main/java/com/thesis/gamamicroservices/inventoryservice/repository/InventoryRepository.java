@@ -15,4 +15,5 @@ public interface InventoryRepository extends CrudRepository<Inventory, Integer> 
     List<Inventory> findAllByWarehouseId(int warehouseID);
     Optional<Inventory> findByProductIdAndWarehouseId(int productID, int warehouseID);
 
+
 }

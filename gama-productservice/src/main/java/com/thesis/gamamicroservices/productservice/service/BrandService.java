@@ -1,8 +1,8 @@
 package com.thesis.gamamicroservices.productservice.service;
 
 import com.thesis.gamamicroservices.productservice.dto.BrandSetDTO;
-import com.thesis.gamamicroservices.productservice.dto.messages.BrandCreatedMessage;
-import com.thesis.gamamicroservices.productservice.dto.messages.BrandDeletedMessage;
+import com.thesis.gamamicroservices.productservice.dto.messages.produced.BrandCreatedMessage;
+import com.thesis.gamamicroservices.productservice.dto.messages.produced.BrandDeletedMessage;
 import com.thesis.gamamicroservices.productservice.messaging.RoutingKeys;
 import com.thesis.gamamicroservices.productservice.model.Brand;
 import com.thesis.gamamicroservices.productservice.model.Product;

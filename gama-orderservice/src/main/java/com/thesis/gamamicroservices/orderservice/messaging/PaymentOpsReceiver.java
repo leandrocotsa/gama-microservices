@@ -1,6 +1,7 @@
 package com.thesis.gamamicroservices.orderservice.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thesis.gamamicroservices.orderservice.dto.messages.consumed.PaymentCreatedMessage;
 import com.thesis.gamamicroservices.orderservice.service.EventsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +23,9 @@ public class PaymentOpsReceiver {
     EventsService eventsService;
 
     @RabbitHandler
-    public void paymentConfirmed(Integer orderId) {
-        logger.info(PAYMENT_CONFIRMED_LOG, orderId);
-        eventsService.paymentConfirmed(orderId);
+    public void paymentConfirmed(PaymentCreatedMessage paymentCreatedMessage) {
+        logger.info(PAYMENT_CONFIRMED_LOG, paymentCreatedMessage.getOrderId());
+        eventsService.paymentConfirmed(paymentCreatedMessage.getOrderId());
     }
 
 }

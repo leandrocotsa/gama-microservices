@@ -1,6 +1,6 @@
 package com.thesis.gamamicroservices.orderservice.model.foreign;
 
-import com.thesis.gamamicroservices.orderservice.dto.messages.ProductCreatedMessage;
+import com.thesis.gamamicroservices.orderservice.dto.messages.consumed.ProductCreatedMessage;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

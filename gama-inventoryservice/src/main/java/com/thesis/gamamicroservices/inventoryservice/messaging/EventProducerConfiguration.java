@@ -52,7 +52,7 @@ public class EventProducerConfiguration {
         idClassMapping.put("product_deleted", ProductDeletedMessage.class);
         idClassMapping.put("order_created", OrderCreatedMessage.class);
         idClassMapping.put("stock_checked", StockCheckMessage.class);
-        idClassMapping.put("inventory_updated", StockCheckMessage.class);
+        idClassMapping.put("inventory_updated", InventoryUpdatedMessage.class);
         idClassMapping.put("warehouse_created", WarehouseCreatedMessage.class);
         idClassMapping.put("warehouse_deleted", WarehouseDeletedMessage.class);
         classMapper.setIdClassMapping(idClassMapping);

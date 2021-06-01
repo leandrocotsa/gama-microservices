@@ -27,7 +27,9 @@ public class JwtTokenUtil implements Serializable {
     public String getEmailFromAuthorizationString(String authorizationToken) {
         return getClaimFromToken(authorizationToken.substring(7), Claims::getSubject);
     }
-
+    public String getUserIdFromAuthorizationString(String authorizationToken) {
+        return getClaimFromToken(authorizationToken.substring(7), Claims::getId);
+    }
 
     //retrieve email from jwt token
     public String getEmailFromToken(String token) {

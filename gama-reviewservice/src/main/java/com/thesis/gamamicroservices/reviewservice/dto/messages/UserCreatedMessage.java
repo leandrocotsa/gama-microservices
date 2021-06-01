@@ -1,4 +1,4 @@
-package com.thesis.gamamicroservices.shoppingcartservice.dto.messages;
+package com.thesis.gamamicroservices.reviewservice.dto.messages;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

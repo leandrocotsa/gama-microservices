@@ -1,5 +1,6 @@
-package com.thesis.gamamicroservices.orderservice.dto.messages;
+package com.thesis.gamamicroservices.productservice.dto.messages.produced;
 
+import com.thesis.gamamicroservices.productservice.model.Product;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,5 +20,14 @@ public class ProductCreatedMessage {
     //specification values somehow, para a view dos produtos, é preciso
     //os outros service stambem recebem mas ignoram, pq tem aquilo do fail a false
 
+    public ProductCreatedMessage(Product product, int brandId, int categoryId) {
+        this.id = product.getId();
+        this.name = product.getName();
+        this.price = product.getPrice();
+        this.promotionPrice = product.getPromotionPrice();
+        this.weight = product.getWeight();
+        this.brandId = brandId;
+        this.categoryId = categoryId;
+    }
 
 }

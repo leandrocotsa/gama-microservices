@@ -1,5 +1,4 @@
-package com.thesis.gamamicroservices.orderservice.dto.messages;
-
+package com.thesis.gamamicroservices.productservice.dto.messages.produced;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,6 +7,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ProductDeletedMessage {
+public class CategoryDeletedMessage {
     private int id;
 }

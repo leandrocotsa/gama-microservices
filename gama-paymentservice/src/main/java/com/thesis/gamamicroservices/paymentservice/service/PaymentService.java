@@ -1,6 +1,7 @@
 package com.thesis.gamamicroservices.paymentservice.service;
 
 import com.thesis.gamamicroservices.paymentservice.dto.PaymentOrderSetDTO;
+import com.thesis.gamamicroservices.paymentservice.dto.messages.PaymentCreatedMessage;
 import com.thesis.gamamicroservices.paymentservice.model.PaymentOrder;
 import com.thesis.gamamicroservices.paymentservice.model.PaymentStatus;
 import com.thesis.gamamicroservices.paymentservice.model.foreign.ConfirmedOrderReplica;
@@ -39,7 +40,7 @@ public class PaymentService {
         paymentOrder.get().setPayDate(new Date(Calendar.getInstance().getTimeInMillis()));
         paymentOrder.get().setState(PaymentStatus.PAYED);
         paymentRepository.save(paymentOrder.get());
-        rabbitTemplate.convertAndSend(exchange.getName(), "payment.confirmed", orderID);//envia evento para a order por payed
+        rabbitTemplate.convertAndSend(exchange.getName(), "payment.confirmed", new PaymentCreatedMessage(paymentOrder.get()));//envia evento para a order por payed
 
     }
 
