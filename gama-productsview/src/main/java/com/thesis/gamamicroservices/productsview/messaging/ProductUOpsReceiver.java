@@ -1,21 +1,19 @@
-package com.thesis.gamamicroservices.orderservice.messaging;
+package com.thesis.gamamicroservices.productsview.messaging;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thesis.gamamicroservices.orderservice.dto.messages.consumed.ProductUpdatedMessage;
-import com.thesis.gamamicroservices.orderservice.dto.messages.consumed.PromotionPriceMessage;
-import com.thesis.gamamicroservices.orderservice.dto.messages.consumed.PromotionPriceResetMessage;
-import com.thesis.gamamicroservices.orderservice.service.EventsService;
+import com.thesis.gamamicroservices.productsview.dto.messages.product_service.ProductUpdatedMessage;
+import com.thesis.gamamicroservices.productsview.dto.messages.product_service.PromotionPriceMessage;
+import com.thesis.gamamicroservices.productsview.dto.messages.product_service.PromotionPriceResetMessage;
+import com.thesis.gamamicroservices.productsview.messaging.service.ProductsEventsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
-@RabbitListener(queues="productsUOrderServiceQueue")
+@RabbitListener(queues="productsUProductsViewQueue")
 public class ProductUOpsReceiver {
 
     private Logger logger = LoggerFactory.getLogger(ProductCDOpsReceiver.class);
@@ -28,20 +26,20 @@ public class ProductUOpsReceiver {
     ObjectMapper objectMapper;
 
     @Autowired
-    EventsService eventsService;
+    ProductsEventsService eventsService;
 
 
     // lets a single listener invoke different methods, based on the payload type of the incoming message (function arguments)
     //queria filtrar por routing key, neste momento tá tudo product.* e queria método para product.x e product.y
     @RabbitHandler
     public void promotionStarted(PromotionPriceMessage promotionPriceMessage) {
-        eventsService.promotionStarted(promotionPriceMessage);
+        //eventsService.promotionStarted(promotionPriceMessage);
     }
 
     @RabbitHandler
     public void promotionEnded(PromotionPriceResetMessage promotionPriceResetMessage) {
         logger.info(PROMOTION_ENDED_LOG, promotionPriceResetMessage.getProductsEnded());
-        eventsService.promotionEnded(promotionPriceResetMessage);
+        //eventsService.promotionEnded(promotionPriceResetMessage);
     }
 
     @RabbitHandler
@@ -52,10 +50,10 @@ public class ProductUOpsReceiver {
             if(productUpdated.getUpdates().containsKey("promotionPrice")) {
                 Double promotionPrice = (Double)productUpdated.getUpdates().get("promotionPrice");
                 logger.info(PRODUCT_PRICE_UPDATED_LOG, productId);
-                eventsService.priceUpdated(productId, price, promotionPrice);
+                //eventsService.priceUpdated(productId, price, promotionPrice);
             } else {
                 logger.info(PRODUCT_PRICE_UPDATED_LOG, productId);
-                eventsService.priceUpdated(productId, price);
+                //eventsService.priceUpdated(productId, price);
             }
 
         }
