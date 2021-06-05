@@ -19,16 +19,13 @@ public class ProductCDOpsReceiver {
     private static final String PRODUCT_DELETED_LOG = "Product deleted event. Product: {}";
 
     @Autowired
-    ObjectMapper objectMapper;
-
-    @Autowired
-    ProductsEventsService eventsService;
+    ProductsEventsService productsEventsService;
 
     @RabbitHandler
     public void productCreated(ProductCreatedMessage productCreated) {
         //ProductReplica product = new ProductReplica(productCreated);
         logger.info(PRODUCT_CREATED_LOG, productCreated.getId());
-        //eventsService.productCreated(product);
+        productsEventsService.productCreated(productCreated);
     }
 
     @RabbitHandler

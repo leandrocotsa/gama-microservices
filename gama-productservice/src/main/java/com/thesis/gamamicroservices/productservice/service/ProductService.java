@@ -94,7 +94,7 @@ public class ProductService {
         //posso enviar product com as specs todas para a view e nos serviços que nao a view as classes que recebem nao têm a info que nao precisam e nao dá erro
         //String productJson = objectWriter.writeValueAsString(new ProductCreatedDTO(p, brand.getId(), category.getId()));
 
-        rabbitTemplate.convertAndSend(deletedCreatedExchange.getName(), RoutingKeys.PRODUCT_CREATED.getNotation(), new ProductCreatedMessage(p, brand.getId(), category.getId()));
+        rabbitTemplate.convertAndSend(deletedCreatedExchange.getName(), RoutingKeys.PRODUCT_CREATED.getNotation(), new ProductCreatedMessage(p, brand.getId(), brand.getName(), category.getId(), category.getName()));
         //ver rabbittamplate.receiveandconvert
 
     }
@@ -135,6 +135,7 @@ public class ProductService {
                             try {
                                 Brand brand = brandService.findById((Integer) v);
                                 product.setBrand(brand);
+                                duplicated_updates.put("brandName", brand.getName());
                             } catch (NoDataFoundException e) {
                                 duplicated_updates.remove(k);
                                 throw new NullPointerException();
@@ -144,6 +145,7 @@ public class ProductService {
                             try {
                                 Category category = categoryService.findById((Integer) v);
                                 product.setCategory(category);
+                                duplicated_updates.put("categoryName", category.getName());
                             } catch (NoDataFoundException e) {
                                 duplicated_updates.remove(k);
                                 throw new NullPointerException();

@@ -66,7 +66,7 @@ public class BrandService {
         } else {
             Brand brand = Brand.builder().name(brandSetDTO.getName()).build();
             this.brandRepository.save(brand);
-            rabbitTemplate.convertAndSend(brandsCategoriesExchange.getName(), RoutingKeys.BRAND_CREATED.getNotation(), new BrandCreatedMessage(brand));
+            rabbitTemplate.convertAndSend(brandsCategoriesExchange.getName(), "brandsCategories", new BrandCreatedMessage(brand));
 
         }
     }
@@ -80,7 +80,7 @@ public class BrandService {
                 throw new ExistingForeignKeysException("There are still products associated with that Brand");
             } else {
                 this.brandRepository.deleteById(brandId);
-                rabbitTemplate.convertAndSend(brandsCategoriesExchange.getName(), RoutingKeys.BRAND_DELETED.getNotation(), new BrandDeletedMessage(brandId));
+                rabbitTemplate.convertAndSend(brandsCategoriesExchange.getName(), "brandsCategories", new BrandDeletedMessage(brandId));
             }
         } else {
             throw new NoDataFoundException("There's no brand with that id " + brandId);

@@ -11,8 +11,6 @@ import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashMap;
-
 @RabbitListener(queues="productsUProductsViewQueue")
 public class ProductUOpsReceiver {
 
@@ -20,43 +18,30 @@ public class ProductUOpsReceiver {
 
     private static final String PROMOTION_STARTED_LOG = "Promotion started event received, Products: {} changed their promotional price";
     private static final String PROMOTION_ENDED_LOG = "Promotion ended event received, Products: {} changed their promotional price";
-    private static final String PRODUCT_PRICE_UPDATED_LOG = "Product price updated event received, Product: {}";
+    private static final String PRODUCT_UPDATED_LOG = "Product updated event received, Product: {}";
 
     @Autowired
     ObjectMapper objectMapper;
 
     @Autowired
-    ProductsEventsService eventsService;
+    ProductsEventsService productsEventsService;
 
-
-    // lets a single listener invoke different methods, based on the payload type of the incoming message (function arguments)
-    //queria filtrar por routing key, neste momento tá tudo product.* e queria método para product.x e product.y
     @RabbitHandler
     public void promotionStarted(PromotionPriceMessage promotionPriceMessage) {
-        //eventsService.promotionStarted(promotionPriceMessage);
+        logger.info(PROMOTION_STARTED_LOG, promotionPriceMessage.getProductsIds_and_prices());
+        productsEventsService.promotionStarted(promotionPriceMessage);
     }
 
     @RabbitHandler
     public void promotionEnded(PromotionPriceResetMessage promotionPriceResetMessage) {
         logger.info(PROMOTION_ENDED_LOG, promotionPriceResetMessage.getProductsEnded());
-        //eventsService.promotionEnded(promotionPriceResetMessage);
+        productsEventsService.promotionEnded(promotionPriceResetMessage);
     }
 
     @RabbitHandler
-    public void priceUpdated(ProductUpdatedMessage productUpdated) {
-        if(productUpdated.getUpdates().containsKey("price")) {
-            Double price = (Double)productUpdated.getUpdates().get("price");
-            int productId = (Integer)productUpdated.getUpdates().get("id");
-            if(productUpdated.getUpdates().containsKey("promotionPrice")) {
-                Double promotionPrice = (Double)productUpdated.getUpdates().get("promotionPrice");
-                logger.info(PRODUCT_PRICE_UPDATED_LOG, productId);
-                //eventsService.priceUpdated(productId, price, promotionPrice);
-            } else {
-                logger.info(PRODUCT_PRICE_UPDATED_LOG, productId);
-                //eventsService.priceUpdated(productId, price);
-            }
-
-        }
+    public void productUpdated(ProductUpdatedMessage productUpdated) {
+        logger.info(PRODUCT_UPDATED_LOG, productUpdated.getUpdates().get("id"));
+        productsEventsService.editProduct(productUpdated);
     }
 
 

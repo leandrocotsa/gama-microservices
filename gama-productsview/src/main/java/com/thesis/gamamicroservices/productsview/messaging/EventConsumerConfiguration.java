@@ -101,7 +101,7 @@ public class EventConsumerConfiguration {
         return BindingBuilder
                 .bind(reviewsProductsViewQueue())
                 .to(reviewExchange)
-                .with("reviews");
+                .with("review");
     }
 
     //---------INVENTORY-SERVICE----------
@@ -121,7 +121,7 @@ public class EventConsumerConfiguration {
         return BindingBuilder
                 .bind(inventoryWarehouseProductsViewQueue())
                 .to(inventoryWarehouseExchange)
-                .with("inventories");
+                .with("inventory");
     }
 
     //---------PROMOTION-SERVICE----------
@@ -141,15 +141,36 @@ public class EventConsumerConfiguration {
         return BindingBuilder
                 .bind(promotionCUDProductsViewQueue())
                 .to(promotionCUDExchange)
-                .with("inventories");
+                .with("promotion");
     }
 
-/**
     @Bean
-    public PromotionOpsReceiver promotionOpsReceiver() {
-        return new PromotionOpsReceiver();
+    public ProductCDOpsReceiver productCDReceiver() {
+        return new ProductCDOpsReceiver();
     }
-**/
+
+    @Bean
+    public InventoryOpsReceiver inventoryOpsReceiver() {
+        return new InventoryOpsReceiver();
+    }
+
+    @Bean
+    public ReviewOpsReceiver reviewOpsReceiver() {
+        return new ReviewOpsReceiver();
+    }
+
+    @Bean
+    public BrandCategoryOpsReceiver brandCategoryOpsReceiver() {
+        return new BrandCategoryOpsReceiver();
+    }
+
+    @Bean
+    public ProductUOpsReceiver productUOpsReceiver() {
+        return new ProductUOpsReceiver();
+    }
+
+
+
     @Bean
     public ObjectMapper objectMapper(){
         ObjectMapper o = new ObjectMapper();

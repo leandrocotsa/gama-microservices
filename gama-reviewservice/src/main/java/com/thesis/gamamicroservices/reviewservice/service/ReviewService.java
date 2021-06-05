@@ -23,15 +23,13 @@ public class ReviewService {
     private final RabbitTemplate rabbitTemplate;
     private final Exchange exchange;
     private final ReviewRepository reviewRepository;
-    private final ObjectWriter objectWriter;
     private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    public ReviewService(RabbitTemplate rabbitTemplate, @Qualifier("reviewExchange") Exchange exchange, ReviewRepository reviewRepository, ObjectWriter objectWriter, JwtTokenUtil jwtTokenUtil) {
+    public ReviewService(RabbitTemplate rabbitTemplate, @Qualifier("reviewExchange") Exchange exchange, ReviewRepository reviewRepository, JwtTokenUtil jwtTokenUtil) {
         this.rabbitTemplate = rabbitTemplate;
         this.exchange = exchange;
         this.reviewRepository = reviewRepository;
-        this.objectWriter = objectWriter;
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
@@ -40,7 +38,7 @@ public class ReviewService {
         int userId = Integer.parseInt(jwtTokenUtil.getUserIdFromAuthorizationString(authorizationToken));
         Review r = new Review(reviewSetDTO, userId, productID);
         this.reviewRepository.save(r);
-        rabbitTemplate.convertAndSend(exchange.getName(), "review.created", new ReviewCreatedMessage(r));
+        rabbitTemplate.convertAndSend(exchange.getName(), "review", new ReviewCreatedMessage(r));
     }
 
 
@@ -49,7 +47,7 @@ public class ReviewService {
         Optional<Review> review = this.reviewRepository.findById(reviewID);
         if(review.isPresent() && review.get().getUserId() == userId) {
             reviewRepository.delete(review.get());
-            rabbitTemplate.convertAndSend(exchange.getName(), "review.deleted", new ReviewDeletedMessage(reviewID));
+            rabbitTemplate.convertAndSend(exchange.getName(), "review", new ReviewDeletedMessage(reviewID));
         }
         else {
             throw new NoDataFoundException("You cannot delete review of id " + reviewID);
@@ -65,6 +63,7 @@ public class ReviewService {
     @Transactional
     public void deleteReviewByUserId(int userId) {
         reviewRepository.deleteAllByUserId(userId);
+        //evento de multiple review delete, ReviewsDeletedUserDeletedMessage
     }
 
 }

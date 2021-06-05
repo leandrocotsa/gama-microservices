@@ -3,9 +3,9 @@ package com.thesis.gamamicroservices.inventoryservice.messaging;
 public enum RoutingKeys {
 
     STOCK_CHECK("stock"),
-    INVENTORY_UPDATED("inventory.updated"),
-    WAREHOUSE_CREATED("warehouse.created"),
-    WAREHOUSE_DELETED("warehouse.deleted");
+    INVENTORY_UPDATED("inventory"),
+    WAREHOUSE_CREATED("warehouse"),
+    WAREHOUSE_DELETED("warehouse");
 
     String notation;
 

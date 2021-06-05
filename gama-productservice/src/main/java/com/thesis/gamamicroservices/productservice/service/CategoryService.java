@@ -55,7 +55,7 @@ public class CategoryService {
         } else {
             Category category = new Category(categoryDTO);
             this.categoryRepository.save(category);
-            rabbitTemplate.convertAndSend(brandsCategoriesExchange.getName(), RoutingKeys.CATEGORY_CREATED.getNotation(), new CategoryCreatedMessage(category));
+            rabbitTemplate.convertAndSend(brandsCategoriesExchange.getName(), "brandsCategories", new CategoryCreatedMessage(category));
         }
     }
 
@@ -73,7 +73,7 @@ public class CategoryService {
                 throw new ExistingForeignKeysException("There are still products associated with that Category");
             } else {
                 this.categoryRepository.deleteById(catId);
-                rabbitTemplate.convertAndSend(brandsCategoriesExchange.getName(), RoutingKeys.CATEGORY_DELETED.getNotation(), new CategoryDeletedMessage(catId));
+                rabbitTemplate.convertAndSend(brandsCategoriesExchange.getName(), "brandsCategories", new CategoryDeletedMessage(catId));
             }
         } else {
             throw new NoDataFoundException("There's no category with that id " + catId);

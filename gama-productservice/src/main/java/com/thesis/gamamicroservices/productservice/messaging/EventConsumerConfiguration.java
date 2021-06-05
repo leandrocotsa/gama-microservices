@@ -26,7 +26,7 @@ public class EventConsumerConfiguration {
 
 
     @Bean
-    public Binding bindingUsers(@Qualifier("promotionPriceExchange") FanoutExchange promotionExchange) {
+    public Binding bindingPromotion(@Qualifier("promotionPriceExchange") FanoutExchange promotionExchange) {
         return BindingBuilder
                 .bind(promotionProductServiceQueue())
                 .to(promotionExchange);

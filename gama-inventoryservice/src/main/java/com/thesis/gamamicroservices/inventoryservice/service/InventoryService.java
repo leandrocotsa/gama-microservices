@@ -65,14 +65,14 @@ public class InventoryService {
         if (inventory.isPresent()) {
             inventory.get().setStockAmount(inventory.get().getStockAmount() + qty);
             inventoryRepository.save(inventory.get());
-            rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.INVENTORY_UPDATED.getNotation(), new InventoryUpdatedMessage(inventory.get()));
+            rabbitTemplate.convertAndSend(exchange.getName(), "inventory", new InventoryUpdatedMessage(inventory.get()));
         } else {
             try {
                 Optional<Warehouse> w = warehouseRepository.findById(warehouseID);
                 if (w.isPresent()) {
                     Inventory newInv = new Inventory(w.get(), this.getProductById(productID), qty);
                     inventoryRepository.save(newInv);
-                    rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.INVENTORY_UPDATED.getNotation(), new InventoryUpdatedMessage(newInv));
+                    rabbitTemplate.convertAndSend(exchange.getName(), "inventory", new InventoryUpdatedMessage(newInv));
                     //tambem devia fazer product.setInventories e colocar este novo e fazer save do produto
                     //alias, como é cascade ate bastava guardar só aí que o inventory tambem ia ser persistido
                     //mas como o inventory é o owning side funciona, mas se tiver bugs mudo
@@ -90,7 +90,7 @@ public class InventoryService {
         if (inventory.isPresent()) {
             inventory.get().setStockAmount(qty);
             inventoryRepository.save(inventory.get());
-            rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.INVENTORY_UPDATED.getNotation(), new InventoryUpdatedMessage(inventory.get()));
+            rabbitTemplate.convertAndSend(exchange.getName(), "inventory", new InventoryUpdatedMessage(inventory.get()));
         } else {
             throw new NoDataFoundException("There's no inventory for Product with id " + productID + " and wahrehouse with id" + warehouseID);
         }
@@ -123,7 +123,7 @@ public class InventoryService {
                     //com um thread constantemente a verificar se stock=0?
                 }
                 this.inventoryRepository.save(i);
-                rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.INVENTORY_UPDATED.getNotation(), new InventoryUpdatedMessage(i));
+                rabbitTemplate.convertAndSend(exchange.getName(), "inventory", new InventoryUpdatedMessage(i));
                 //tenho que por numa string na order de quais armazens stock foi retirado
             }
 
@@ -138,7 +138,7 @@ public class InventoryService {
         if (existingWarehouse.isEmpty()) {
             Warehouse warehouse = new Warehouse((warehouseSetDTO));
             warehouseRepository.save(warehouse);
-            rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.WAREHOUSE_CREATED.getNotation(), new WarehouseCreatedMessage(warehouse));
+            rabbitTemplate.convertAndSend(exchange.getName(), "inventory", new WarehouseCreatedMessage(warehouse));
         } else {
             throw new AlreadyExistsException("There's a Warehouse with that name");
         }
@@ -148,7 +148,7 @@ public class InventoryService {
     public void deleteWarehouse(int id) throws NoDataFoundException {
         if (warehouseRepository.existsById(id)) { //evita que tenha de fazer um fetch extra
             warehouseRepository.deleteById(id);
-            rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.WAREHOUSE_DELETED.getNotation(), new WarehouseDeletedMessage(id));
+            rabbitTemplate.convertAndSend(exchange.getName(), "inventory", new WarehouseDeletedMessage(id));
         } else {
             throw new NoDataFoundException("There's no Warehouse with that id");
         }

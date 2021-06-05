@@ -68,7 +68,7 @@ public class PromotionService {
         }
         promotion.setProductsIds(products);
         promotionRepository.save(promotion);
-        rabbitTemplate.convertAndSend(promotionExchange.getName(), "promotion.created", new PromotionCreatedMessage(promotion));
+        rabbitTemplate.convertAndSend(promotionExchange.getName(), "promotion", new PromotionCreatedMessage(promotion));
 
         //ugh isto vai ter de ser uma mensagem tambem para a view ter as promotions
     }
@@ -80,9 +80,9 @@ public class PromotionService {
         Promotion p = this.getPromotionById(promotionID);
         promotionRepository.delete(p);
         if(p.getState().equals(PromotionState.ACTIVE)) {
-            rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion.ended", new PromotionEndedMessage(p.getProductsIds()));
+            rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion", new PromotionEndedMessage(p.getProductsIds()));
         }
-        rabbitTemplate.convertAndSend(promotionExchange.getName(), "promotion.deleted", new PromotionDeletedMessage(promotionID));
+        rabbitTemplate.convertAndSend(promotionExchange.getName(), "promotion", new PromotionDeletedMessage(promotionID));
     }
 
 
@@ -105,7 +105,7 @@ public class PromotionService {
         promotionRepository.save(promotion);
 
         if(promotion.getState().equals(PromotionState.ACTIVE)) {
-            rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion.started", new PromotionStartedMessage(newProducts, promotion.getDiscountAmount()));
+            rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion", new PromotionStartedMessage(newProducts, promotion.getDiscountAmount()));
 
             /**
             try {
@@ -116,7 +116,7 @@ public class PromotionService {
             }
              **/
         }
-        rabbitTemplate.convertAndSend(promotionExchange.getName(), "promotion.updated", new PromotionUpdatedMessage(allProducts));
+        rabbitTemplate.convertAndSend(promotionExchange.getName(), "promotion", new PromotionUpdatedMessage(allProducts));
 
     }
 
@@ -156,9 +156,9 @@ public class PromotionService {
         promotionRepository.save(promotion);
 
         if(promotion.getState().equals(PromotionState.ACTIVE)) {
-            rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion.ended", new PromotionEndedMessage(removedProducts));
+            rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion", new PromotionEndedMessage(removedProducts));
         }
-        rabbitTemplate.convertAndSend(promotionExchange.getName(), "promotion.updated", new PromotionUpdatedMessage(promotion.getProductsIds()));
+        rabbitTemplate.convertAndSend(promotionExchange.getName(), "promotion", new PromotionUpdatedMessage(promotion.getProductsIds()));
 
         //SE A PROMOÇÃO JA ESTIVER EM ACTIVE ENTAO MANDO EVENTO, SENAO NAO
     }
@@ -169,7 +169,7 @@ public class PromotionService {
         p.setState(PromotionState.EXPIRED);
         this.promotionRepository.save(p);
         ArrayList<Integer> products = new ArrayList<>(p.getProductsIds());
-        rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion.ended", new PromotionEndedMessage(products));
+        rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion", new PromotionEndedMessage(products));
 
         //ENVIAR EVENTO COM LISTA DE IDS PARA O PRODUCT SERVICE MUDAR OS PREÇOS
     }
@@ -179,7 +179,7 @@ public class PromotionService {
         Promotion p = this.getPromotionById(promotionID);
         p.setState(PromotionState.ACTIVE);
         this.promotionRepository.save(p);
-        rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion.started", new PromotionStartedMessage(p));
+        rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion", new PromotionStartedMessage(p));
         /**
         try {
             String productsJson = objectWriter.writeValueAsString(new PromotionStartedMessage(p));
