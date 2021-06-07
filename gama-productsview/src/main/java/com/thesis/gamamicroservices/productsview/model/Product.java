@@ -20,6 +20,7 @@ public class Product {
     private String name;
     private Double price;
     private Double promotionPrice;
+    private Integer promotionId;
     private float weight;
     private int brandId;
     private String brandName;
@@ -33,6 +34,7 @@ public class Product {
         this.name = product.getName();
         this.price = product.getPrice();
         this.promotionPrice = product.getPromotionPrice();
+        this.promotionId = null;
         this.weight = product.getWeight();
         this.brandId = product.getBrandId();
         this.brandName = product.getBrandName();

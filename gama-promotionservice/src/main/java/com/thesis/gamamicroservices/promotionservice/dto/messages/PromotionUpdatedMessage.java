@@ -12,4 +12,5 @@ import java.util.List;
 @Data
 public class PromotionUpdatedMessage {
     List<Integer> allProducts;
+    private int promotionId;
 }

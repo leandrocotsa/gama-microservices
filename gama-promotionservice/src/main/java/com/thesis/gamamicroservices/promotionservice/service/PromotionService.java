@@ -105,7 +105,7 @@ public class PromotionService {
         promotionRepository.save(promotion);
 
         if(promotion.getState().equals(PromotionState.ACTIVE)) {
-            rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion", new PromotionStartedMessage(newProducts, promotion.getDiscountAmount()));
+            rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion", new PromotionStartedMessage(newProducts, promotion.getDiscountAmount(), promotion.getId()));
 
             /**
             try {
@@ -116,7 +116,7 @@ public class PromotionService {
             }
              **/
         }
-        rabbitTemplate.convertAndSend(promotionExchange.getName(), "promotion", new PromotionUpdatedMessage(allProducts));
+        rabbitTemplate.convertAndSend(promotionExchange.getName(), "promotion", new PromotionUpdatedMessage(allProducts, promotionID));
 
     }
 
@@ -158,7 +158,7 @@ public class PromotionService {
         if(promotion.getState().equals(PromotionState.ACTIVE)) {
             rabbitTemplate.convertAndSend(priceExchange.getName(), "promotion", new PromotionEndedMessage(removedProducts));
         }
-        rabbitTemplate.convertAndSend(promotionExchange.getName(), "promotion", new PromotionUpdatedMessage(promotion.getProductsIds()));
+        rabbitTemplate.convertAndSend(promotionExchange.getName(), "promotion", new PromotionUpdatedMessage(promotion.getProductsIds(), promotionID));
 
         //SE A PROMOÇÃO JA ESTIVER EM ACTIVE ENTAO MANDO EVENTO, SENAO NAO
     }

@@ -184,7 +184,7 @@ public class ProductService {
                 e.printStackTrace();
             }
         }
-        rabbitTemplate.convertAndSend(updatedExchange.getName(), RoutingKeys.PROMOTION_STARTED.getNotation(), new PromotionPriceMessage(products_price));
+        rabbitTemplate.convertAndSend(updatedExchange.getName(), RoutingKeys.PROMOTION_STARTED.getNotation(), new PromotionPriceMessage(products_price, promotionStarted.getPromotionId()));
 
         //promotionStarted.setProductsIds(productsId);
 /**

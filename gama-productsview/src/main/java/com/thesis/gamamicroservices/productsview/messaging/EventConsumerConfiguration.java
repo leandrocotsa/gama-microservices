@@ -169,6 +169,11 @@ public class EventConsumerConfiguration {
         return new ProductUOpsReceiver();
     }
 
+    @Bean
+    public PromotionOpsReceiver promotionOpsReceiver() {
+        return new PromotionOpsReceiver();
+    }
+
 
 
     @Bean

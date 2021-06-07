@@ -12,5 +12,5 @@ import java.util.Map;
 @Data
 public class PromotionPriceMessage {
     private Map<Integer,Double> productsIds_and_prices;
-
+    private int promotionId;
 }

@@ -59,6 +59,7 @@ public class ProductsEventsService {
             try {
                 Product p = productService.getProductById(entry.getKey());
                 p.setPromotionPrice(entry.getValue());
+                p.setPromotionId(promotionStarted.getPromotionId());
                 productRepository.save(p);
             } catch (NoDataFoundException e) {
                 e.printStackTrace();
@@ -72,6 +73,7 @@ public class ProductsEventsService {
             try {
                 Product product = productService.getProductById(pId);
                 product.setPromotionPrice(null);
+                product.setPromotionId(null);
                 productRepository.save(product);
             } catch (NoDataFoundException e) {
                 e.printStackTrace();

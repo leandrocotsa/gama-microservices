@@ -12,5 +12,6 @@ import java.util.List;
 public class PromotionStartedMessage {
     private List<Integer> productsIds;
     private int discountAmount;
+    private int promotionId;
 
 }

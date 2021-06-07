@@ -4,6 +4,7 @@ import com.thesis.gamamicroservices.productsview.dto.messages.product_service.Ca
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @NoArgsConstructor
@@ -11,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @Document(collection = "categories")
 public class Category {
+    @Id
     private int categoryId;
     private String categoryName;
     private String typicalSpecifications;

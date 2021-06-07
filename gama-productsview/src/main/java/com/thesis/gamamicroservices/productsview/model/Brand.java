@@ -4,6 +4,7 @@ import com.thesis.gamamicroservices.productsview.dto.messages.product_service.Br
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @NoArgsConstructor
@@ -11,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @Document(collection = "brands")
 public class Brand {
+    @Id
     private int brandId;
     private String brandName;
 

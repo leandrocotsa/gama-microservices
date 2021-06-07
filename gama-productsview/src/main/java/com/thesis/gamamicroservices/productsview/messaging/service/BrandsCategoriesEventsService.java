@@ -24,7 +24,7 @@ public class BrandsCategoriesEventsService {
     }
 
     public void deleteBrand(BrandDeletedMessage brandDeletedMessage) {
-        brandRepository.deleteById(String.valueOf(brandDeletedMessage.getId()));
+        brandRepository.deleteById(brandDeletedMessage.getId());
     }
 
     public void createCategory(CategoryCreatedMessage categoryCreatedMessage) {
@@ -32,6 +32,6 @@ public class BrandsCategoriesEventsService {
     }
 
     public void deleteCategory(CategoryDeletedMessage categoryDeletedMessage) {
-        categoryRepository.deleteById(String.valueOf(categoryDeletedMessage.getId()));
+        categoryRepository.deleteById(categoryDeletedMessage.getId());
     }
 }

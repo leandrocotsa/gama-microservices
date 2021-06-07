@@ -43,6 +43,6 @@ public class InventoryEventsService {
     }
 
     public void deleteWarehouse(WarehouseDeletedMessage warehouseDeleted) {
-        warehouseRepository.deleteById(String.valueOf(warehouseDeleted.getId()));
+        warehouseRepository.deleteById(warehouseDeleted.getId());
     }
 }

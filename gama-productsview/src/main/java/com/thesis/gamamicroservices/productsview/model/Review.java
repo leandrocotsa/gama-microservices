@@ -4,6 +4,7 @@ import com.thesis.gamamicroservices.productsview.dto.messages.review_service.Rev
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 
 @NoArgsConstructor
 @AllArgsConstructor

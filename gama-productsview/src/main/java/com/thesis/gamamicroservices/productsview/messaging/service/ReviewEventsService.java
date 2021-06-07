@@ -28,6 +28,6 @@ public class ReviewEventsService {
 
     //testar se assim funciona ou se tenho de ir ao produto e retirar a review da lista
     public void deleteReview(ReviewDeletedMessage reviewDeleted) {
-        reviewRepository.deleteById(String.valueOf(reviewDeleted.getReviewId()));
+        reviewRepository.deleteById(reviewDeleted.getReviewId());
     }
 }
