@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class AddressCreatedMessage {
     private int addressId;
+    private int userId;
     private String street;
     private String zipCode;
     private String country;

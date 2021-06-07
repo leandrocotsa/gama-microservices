@@ -6,15 +6,6 @@ import com.thesis.gamamicroservices.ordersview.dto.messages.order_service.OrderC
 import com.thesis.gamamicroservices.ordersview.dto.messages.order_service.OrderCreatedMessage;
 import com.thesis.gamamicroservices.ordersview.dto.messages.order_service.OrderStatusUpdateMessage;
 import com.thesis.gamamicroservices.ordersview.dto.messages.user_service.*;
-import com.thesis.gamamicroservices.productsview.dto.messages.inventory_service.InventoryUpdatedMessage;
-import com.thesis.gamamicroservices.productsview.dto.messages.inventory_service.WarehouseCreatedMessage;
-import com.thesis.gamamicroservices.productsview.dto.messages.inventory_service.WarehouseDeletedMessage;
-import com.thesis.gamamicroservices.productsview.dto.messages.product_service.*;
-import com.thesis.gamamicroservices.productsview.dto.messages.promotion_service.PromotionCreatedMessage;
-import com.thesis.gamamicroservices.productsview.dto.messages.promotion_service.PromotionDeletedMessage;
-import com.thesis.gamamicroservices.productsview.dto.messages.promotion_service.PromotionUpdatedMessage;
-import com.thesis.gamamicroservices.productsview.dto.messages.review_service.ReviewCreatedMessage;
-import com.thesis.gamamicroservices.productsview.dto.messages.review_service.ReviewDeletedMessage;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -31,151 +22,97 @@ import java.util.Map;
 @Configuration
 public class EventConsumerConfiguration {
 
-    //---------PRODUCT-SERVICE----------
+    //---------ORDER-SERVICE----------
 
-    @Bean(name="productCreatedDeletedExchange")
-    public FanoutExchange productCreatedDeletedExchange() {
-        return new FanoutExchange("productCreatedDeletedExchange");
-    }
-
-    @Bean(name="productUpdatedExchange")
-    public FanoutExchange productUpdatedExchange() {
-        return new FanoutExchange("productUpdatedExchange");
-    }
-
-    @Bean(name="brandsCategoriesExchange")
-    public DirectExchange brandsCategoriesExchange() {
-        return new DirectExchange("brandsCategoriesExchange");
-    }
-
-
-    @Bean
-    public Queue productsCreatedDeletedQueue() {
-        return new Queue("productsCDProductsViewQueue");
+    @Bean(name="ordersExchange")
+    public TopicExchange ordersExchange() {
+        return new TopicExchange("ordersExchange");
     }
 
     @Bean
-    public Queue productsUpdatedQueue() {
-        return new Queue("productsUProductsViewQueue");
+    public Queue ordersOrdersViewQueue() {
+        return new Queue("ordersOrdersViewQueue");
     }
 
     @Bean
-    public Queue brandsCategoriesQueue() {
-        return new Queue("brandsCategoriesProductsViewQueue");
-    }
-
-
-
-    @Bean
-    public Binding bindingProductsCreatedDeleted(@Qualifier("productCreatedDeletedExchange") FanoutExchange productCreatedDeletedExchange) {
+    public Binding bindingOrders(@Qualifier("ordersExchange") TopicExchange ordersExchange) {
         return BindingBuilder
-                .bind(productsCreatedDeletedQueue())
-                .to(productCreatedDeletedExchange);
+                .bind(ordersOrdersViewQueue())
+                .to(ordersExchange)
+                .with("order.*");
+    }
+
+    //---------USER-SERVICE----------
+
+    @Bean(name="userExchange")
+    public FanoutExchange userExchange() {
+        return new FanoutExchange("userExchange");
+    }
+
+    @Bean(name="userUExchange")
+    public DirectExchange userUExchange() {
+        return new DirectExchange("userUExchange");
     }
 
     @Bean
-    public Binding bindingProductsUpdated(@Qualifier("productUpdatedExchange") FanoutExchange productUpdatedExchange) {
+    public Queue userOrdersViewQueue() {
+        return new Queue("userOrdersViewQueue");
+    }
+
+    @Bean
+    public Queue userUOrdersViewQueue() {
+        return new Queue("userUOrdersViewQueue");
+    }
+
+    @Bean
+    public Binding bindingUsers(@Qualifier("userExchange") FanoutExchange userExchange) {
         return BindingBuilder
-                .bind(productsUpdatedQueue())
-                .to(productUpdatedExchange);
+                .bind(userOrdersViewQueue())
+                .to(userExchange);
     }
 
     @Bean
-    public Binding bindingBrandsCategories(@Qualifier("brandsCategoriesExchange") DirectExchange brandsCategoriesExchange) {
+    public Binding bindingUUsers(@Qualifier("userUExchange") DirectExchange userUExchange) {
         return BindingBuilder
-                .bind(brandsCategoriesQueue())
-                .to(brandsCategoriesExchange)
-                .with("brandsCategories");
+                .bind(userUOrdersViewQueue())
+                .to(userUExchange)
+                .with("users");
     }
 
-    //---------REVIEW-SERVICE----------
 
-    @Bean(name="reviewExchange")
-    public DirectExchange reviewExchange() {
-        return new DirectExchange("reviewExchange");
-    }
+    //---------PAYMENT-SERVICE----------
 
-    @Bean
-    public Queue reviewsProductsViewQueue() {
-        return new Queue("reviewsProductsViewQueue");
+    @Bean(name="paymentConfirmedExchange")
+    public FanoutExchange paymentConfirmedExchange() {
+        return new FanoutExchange("paymentConfirmedExchange");
     }
 
     @Bean
-    public Binding bindingReviews(@Qualifier("reviewExchange") DirectExchange reviewExchange) {
+    public Queue paymentConfirmedOrdersViewQueue() {
+        return new Queue("paymentConfirmedOrdersViewQueue");
+    }
+
+    @Bean
+    public Binding bindingPaymentConfirmed(@Qualifier("paymentConfirmedExchange") FanoutExchange paymentConfirmedExchange) {
         return BindingBuilder
-                .bind(reviewsProductsViewQueue())
-                .to(reviewExchange)
-                .with("review");
+                .bind(paymentConfirmedOrdersViewQueue())
+                .to(paymentConfirmedExchange);
     }
 
-    //---------INVENTORY-SERVICE----------
 
-    @Bean(name="inventoryWarehouseExchange")
-    public DirectExchange inventoryWarehouseExchange() {
-        return new DirectExchange("inventoryWarehouseExchange");
+    @Bean
+    public OrderOpsReceiver orderOpsReceiver() {
+        return new OrderOpsReceiver();
     }
 
     @Bean
-    public Queue inventoryWarehouseProductsViewQueue() {
-        return new Queue("inventoryWarehouseProductsViewQueue");
+    public UserOpsReceiver userOpsReceiver() {
+        return new UserOpsReceiver();
     }
 
     @Bean
-    public Binding bindingInventoryWarehouse(@Qualifier("inventoryWarehouseExchange") DirectExchange inventoryWarehouseExchange) {
-        return BindingBuilder
-                .bind(inventoryWarehouseProductsViewQueue())
-                .to(inventoryWarehouseExchange)
-                .with("inventory");
-    }
-
-    //---------PROMOTION-SERVICE----------
-
-    @Bean(name="promotionCUDExchange")
-    public DirectExchange promotionCUDExchange() {
-        return new DirectExchange("promotionCUDExchange");
-    }
-
-    @Bean
-    public Queue promotionCUDProductsViewQueue() {
-        return new Queue("promotionCUDProductsViewQueue");
-    }
-
-    @Bean
-    public Binding bindingPromotion(@Qualifier("promotionCUDExchange") DirectExchange promotionCUDExchange) {
-        return BindingBuilder
-                .bind(promotionCUDProductsViewQueue())
-                .to(promotionCUDExchange)
-                .with("promotion");
-    }
-
-    @Bean
-    public ProductCDOpsReceiver productCDReceiver() {
-        return new ProductCDOpsReceiver();
-    }
-
-    @Bean
-    public InventoryOpsReceiver inventoryOpsReceiver() {
-        return new InventoryOpsReceiver();
-    }
-
-    @Bean
-    public ReviewOpsReceiver reviewOpsReceiver() {
-        return new ReviewOpsReceiver();
-    }
-
-    @Bean
-    public BrandCategoryOpsReceiver brandCategoryOpsReceiver() {
-        return new BrandCategoryOpsReceiver();
-    }
-
-    @Bean
-    public ProductUOpsReceiver productUOpsReceiver() {
-        return new ProductUOpsReceiver();
-    }
-
-    @Bean
-    public PromotionOpsReceiver promotionOpsReceiver() {
-        return new PromotionOpsReceiver();
+    public UserUOpsReceiver UserUOpsReceiver() {
+        return new UserUOpsReceiver();
     }
 
 

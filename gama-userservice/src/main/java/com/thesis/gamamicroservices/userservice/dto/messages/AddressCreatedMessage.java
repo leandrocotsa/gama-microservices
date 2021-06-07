@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class AddressCreatedMessage {
     private int addressId;
+    private int userId;
     private String street;
     private String zipCode;
     private String country;
@@ -17,6 +18,7 @@ public class AddressCreatedMessage {
 
     public AddressCreatedMessage(Address address) {
         this.addressId = address.getId();
+        this.userId = address.getUser().getId();
         this.street = address.getStreet();
         this.zipCode = address.getZipCode();
         this.country = address.getCountry();
