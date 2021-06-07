@@ -17,6 +17,9 @@ public class UserCreatedMessage {
     private Date birthDate;
     private String phoneNumber;
     private String sex;
+    private int accountId;
+    private String email;
+    private String role;
 
     public UserCreatedMessage(User user) {
         this.id = user.getId();
@@ -25,5 +28,8 @@ public class UserCreatedMessage {
         this.birthDate = user.getBirthDate();
         this.phoneNumber = user.getPhoneNumber();
         this.sex = user.getSex();
+        this.accountId = user.getAccount().getId();
+        this.email = user.getAccount().getEmail();
+        this.role = user.getAccount().getRole().name();
     }
 }

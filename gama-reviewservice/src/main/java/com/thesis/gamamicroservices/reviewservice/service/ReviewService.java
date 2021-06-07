@@ -47,7 +47,7 @@ public class ReviewService {
         Optional<Review> review = this.reviewRepository.findById(reviewID);
         if(review.isPresent() && review.get().getUserId() == userId) {
             reviewRepository.delete(review.get());
-            rabbitTemplate.convertAndSend(exchange.getName(), "review", new ReviewDeletedMessage(reviewID));
+            rabbitTemplate.convertAndSend(exchange.getName(), "review", new ReviewDeletedMessage(reviewID, review.get().getProductId()));
         }
         else {
             throw new NoDataFoundException("You cannot delete review of id " + reviewID);

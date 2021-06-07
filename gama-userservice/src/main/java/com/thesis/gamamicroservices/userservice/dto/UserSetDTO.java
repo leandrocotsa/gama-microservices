@@ -26,8 +26,8 @@ public class UserSetDTO {
     private Date birthDate;
     private String phoneNumber; //should be optional
     private String sex; //should be optional...vem vazio i guess, e no builder faço build apenas do que quero idk
-    private String street;
-    private String zipCode;
-    private String country;
-    private String city;
+    //private String street;
+    //private String zipCode;
+    //private String country;
+    //private String city;
 }

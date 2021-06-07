@@ -1,4 +1,4 @@
-package com.thesis.gamamicroservices.shoppingcartservice.dto.messages;
+package com.thesis.gamamicroservices.ordersview.dto.messages.user_service;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,5 +19,4 @@ public class UserCreatedMessage {
     private int accountId;
     private String email;
     private String role;
-
 }

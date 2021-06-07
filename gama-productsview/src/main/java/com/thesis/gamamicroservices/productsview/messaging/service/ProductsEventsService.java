@@ -1,9 +1,6 @@
 package com.thesis.gamamicroservices.productsview.messaging.service;
 
-import com.thesis.gamamicroservices.productsview.dto.messages.product_service.ProductCreatedMessage;
-import com.thesis.gamamicroservices.productsview.dto.messages.product_service.ProductUpdatedMessage;
-import com.thesis.gamamicroservices.productsview.dto.messages.product_service.PromotionPriceMessage;
-import com.thesis.gamamicroservices.productsview.dto.messages.product_service.PromotionPriceResetMessage;
+import com.thesis.gamamicroservices.productsview.dto.messages.product_service.*;
 import com.thesis.gamamicroservices.productsview.exceptions.NoDataFoundException;
 import com.thesis.gamamicroservices.productsview.model.Product;
 import com.thesis.gamamicroservices.productsview.repository.ProductRepository;
@@ -27,6 +24,10 @@ public class ProductsEventsService {
     public void productCreated(ProductCreatedMessage productCreatedMessage) {
         Product product = new Product(productCreatedMessage);
         productRepository.save(product);
+    }
+
+    public void productDeleted(ProductDeletedMessage productDeletedMessage) {
+        productRepository.deleteById(productDeletedMessage.getId());
     }
 
     public void editProduct(ProductUpdatedMessage productUpdates) {

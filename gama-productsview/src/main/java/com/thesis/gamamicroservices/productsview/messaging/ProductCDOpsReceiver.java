@@ -31,7 +31,7 @@ public class ProductCDOpsReceiver {
     @RabbitHandler
     public void productDeleted(ProductDeletedMessage productDeleted) {
         logger.info(PRODUCT_DELETED_LOG, productDeleted.getId());
-        //eventsService.productDeleted(productDeleted.getId());
+        productsEventsService.productDeleted(productDeleted);
     }
 
 

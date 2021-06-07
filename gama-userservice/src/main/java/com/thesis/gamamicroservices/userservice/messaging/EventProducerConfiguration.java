@@ -1,7 +1,7 @@
 package com.thesis.gamamicroservices.userservice.messaging;
 
-import com.thesis.gamamicroservices.userservice.dto.messages.UserCreatedMessage;
-import com.thesis.gamamicroservices.userservice.dto.messages.UserDeletedMessage;
+import com.thesis.gamamicroservices.userservice.dto.messages.*;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Exchange;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -18,9 +18,14 @@ import java.util.Map;
 @Configuration
 public class EventProducerConfiguration {
 
-    @Bean
+    @Bean(name="userExchange")
     public Exchange userExchange() {
         return new FanoutExchange("userExchange");
+    }
+
+    @Bean(name="userUExchange")
+    public Exchange userUExchange() {
+        return new DirectExchange("userUExchange");
     }
 
 
@@ -39,6 +44,9 @@ public class EventProducerConfiguration {
         Map<String, Class<?>> idClassMapping = new HashMap<>();
         idClassMapping.put("user_created", UserCreatedMessage.class);
         idClassMapping.put("user_deleted", UserDeletedMessage.class);
+        idClassMapping.put("user_updated", UserUpdatedMessage.class);
+        idClassMapping.put("address_created", AddressCreatedMessage.class);
+        idClassMapping.put("address_deleted", AddressDeletedMessage.class);
         classMapper.setIdClassMapping(idClassMapping);
         //classMapper.setIdClassMapping(Map.of("product_created", ProductCreatedDTO.class));
         messageConverter.setClassMapper(classMapper);

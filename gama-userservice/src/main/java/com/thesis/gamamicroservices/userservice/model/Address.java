@@ -1,5 +1,6 @@
 package com.thesis.gamamicroservices.userservice.model;
 
+import com.thesis.gamamicroservices.userservice.dto.AddressSetDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,10 +26,11 @@ public class Address {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Address(String street, String zipCode, String country, String city) {
-        this.street = street;
-        this.zipCode = zipCode;
-        this.country = country;
-        this.city = city;
+    public Address(AddressSetDTO addressSetDTO) {
+        this.street = addressSetDTO.getStreet();
+        this.zipCode = addressSetDTO.getZipCode();
+        this.country = addressSetDTO.getCountry();
+        this.city = addressSetDTO.getCity();
     }
+
 }
