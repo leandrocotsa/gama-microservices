@@ -121,7 +121,7 @@ public class UserService {
                     field.setAccessible(true);
                     ReflectionUtils.setField(field, user, v);
                 } catch (NullPointerException e) {
-                        throw new NullPointerException();
+                    throw new NullPointerException();
                 }
             });
             userRepository.save(user);
@@ -136,8 +136,10 @@ public class UserService {
         Address address = new Address(addressSetDTO);
         //int userId = Integer.parseInt(jwtTokenUtil.getUserIdFromAuthorizationString(authorizationToken));
         User user = this.getMyUser(authorizationToken);
-        user.addAddressToUser(address);
-        userRepository.save(user);
+        address.setUser(user);
+        addressRepository.save(address);
+        //user.addAddressToUser(address);
+        //userRepository.save(user);
 
         rabbitTemplate.convertAndSend(userUExchange.getName(), "users", new AddressCreatedMessage(address));
     }

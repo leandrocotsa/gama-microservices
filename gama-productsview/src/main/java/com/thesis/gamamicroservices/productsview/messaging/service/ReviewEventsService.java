@@ -25,7 +25,6 @@ public class ReviewEventsService {
     }
 
 
-    //testar se assim funciona ou se tenho de ir ao produto e retirar a review da lista
     public void deleteReview(ReviewDeletedMessage reviewDeleted) {
         Product product = productRepository.findByProductId(reviewDeleted.getProductId()).get();
         product.getReviews().removeIf(r -> r.getReviewId() == reviewDeleted.getReviewId());

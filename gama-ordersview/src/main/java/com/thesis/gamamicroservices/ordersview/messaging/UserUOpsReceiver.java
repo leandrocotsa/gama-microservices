@@ -39,7 +39,7 @@ public class UserUOpsReceiver {
 
     @RabbitHandler
     public void addressRemoved(AddressDeletedMessage addressDeletedMessage) {
-        logger.info(ADDRESS_ADDED_LOG, addressDeletedMessage.getUserId());
+        logger.info(ADDRESS_REMOVED_LOG, addressDeletedMessage.getUserId());
         usersEventsService.addressRemoved(addressDeletedMessage);
     }
 

@@ -25,7 +25,7 @@ public class PaymentOpsReceiver {
     @RabbitHandler
     public void paymentConfirmed(PaymentCreatedMessage paymentCreatedMessage) {
         logger.info(PAYMENT_CONFIRMED_LOG, paymentCreatedMessage.getOrderId());
-        paymentEventsService.paymentConfirmed(paymentCreatedMessage.getOrderId());
+        paymentEventsService.paymentConfirmed(paymentCreatedMessage);
     }
 
 }

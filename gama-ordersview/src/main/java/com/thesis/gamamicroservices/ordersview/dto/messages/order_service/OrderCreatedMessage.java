@@ -19,6 +19,8 @@ public class OrderCreatedMessage {
     private int orderId;
     private Date buyDate;
     private Map<Integer,Integer> products_qty;
+    private Map<Integer,String> products_name;
+    private Map<Integer,Double> products_price;
     private String orderStatus;
     private int userId;
     private String email;

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thesis.gamamicroservices.ordersview.dto.messages.order_service.OrderConfirmedMessage;
 import com.thesis.gamamicroservices.ordersview.dto.messages.order_service.OrderCreatedMessage;
 import com.thesis.gamamicroservices.ordersview.dto.messages.order_service.OrderStatusUpdateMessage;
+import com.thesis.gamamicroservices.ordersview.dto.messages.payment_service.PaymentCreatedMessage;
 import com.thesis.gamamicroservices.ordersview.dto.messages.user_service.*;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -111,8 +112,13 @@ public class EventConsumerConfiguration {
     }
 
     @Bean
-    public UserUOpsReceiver UserUOpsReceiver() {
+    public UserUOpsReceiver userUOpsReceiver() {
         return new UserUOpsReceiver();
+    }
+
+    @Bean
+    public PaymentOpsReceiver paymentOpsReceiver() {
+        return new PaymentOpsReceiver();
     }
 
 
@@ -150,7 +156,7 @@ public class EventConsumerConfiguration {
         idClassMapping.put("order_confirmed", OrderConfirmedMessage.class);
         idClassMapping.put("order_updated", OrderStatusUpdateMessage.class);
 
-
+        idClassMapping.put("payment_confirmed", PaymentCreatedMessage.class);
 
         classMapper.setIdClassMapping(idClassMapping);
         //classMapper.setIdClassMapping(Map.of("product_created", ProductCreatedDTO.class));
