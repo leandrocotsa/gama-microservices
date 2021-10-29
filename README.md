@@ -12,7 +12,7 @@ promoting fault isolation and loose coupling.
 
 ## Stacks
 
-The Docker Swarm cluster is composed of 4 stacks:
+A Docker Swarm cluster is used and it is composed of 4 stacks:
 - Main application stack, composed of:
   - Inventory Serivce
   - Order Service 
@@ -43,12 +43,14 @@ The main business services were built using Java and Spring Boot version `2.4.4`
   - Logstash
   - Kibana
   - Zipkin
+
+To further promote high-availability, GlusterFS was installed on each one of the nodes, which synchronizes the state of specific services, in this case, both the MySQL and MongoDB databases. This enables the possibility of starting the databases service in any of the cluster nodes while keeping the state synchronized.
   
 ## Architecture
 
 The next image represents an overview of the architecture of the main application stack, with the main business services.
 
-![archietcture overview](https://raw.githubusercontent.com/leandrocosta16/gama-microservices/main/imgs/arch-overview.JPG?token=AKMPBABHHHBLLLUINCGSXQTBPQOPU)
+![archietcture overview](https://raw.githubusercontent.com/leandrocosta16/gama-microservices/main/imgs/arch-overview.JPG)
 
 ## Requirements
 
