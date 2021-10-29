@@ -18,8 +18,6 @@ public class ProductCreatedMessage {
     private String brandName;
     private int categoryId;
     private String categoryName;
-    //specification values somehow, para a view dos produtos, é preciso
-    //os outros service stambem recebem mas ignoram, pq tem aquilo do fail a false
 
 
 }

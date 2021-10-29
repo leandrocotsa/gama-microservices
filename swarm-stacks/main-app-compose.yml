@@ -13,6 +13,18 @@ services:
       networks:
         - docker-network
 
+    mongodb-service:
+      ports:
+        - "27017:27017"
+      image: nonoroazoro/rpi-mongo
+      environment:
+        - PUID=1000
+        - PGID=1000
+      volumes:
+        - /mnt/mongodb-data:/data/db # path to glusterFS volume
+      networks:
+        - docker-network
+
 
 
     rabbitmq-service:
@@ -21,8 +33,8 @@ services:
           - 5672:5672
           - 15672:15672
       volumes:
-          - ~/volumes/rabbitmq-volume/data/:/var/lib/rabbitmq/ # path para disco do glusterFS
-          - ~/volumes/rabbitmq-volume/log/:/var/log/rabbitmq # path para disco do glusterFS
+          - ~/volumes/rabbitmq-volume/data/:/var/lib/rabbitmq/
+          - ~/volumes/rabbitmq-volume/log/:/var/log/rabbitmq
       networks:
         - docker-network
 
