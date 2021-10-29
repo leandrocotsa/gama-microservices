@@ -1,6 +1,5 @@
 package com.thesis.gamamicroservices.orderservice.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.thesis.gamamicroservices.orderservice.dto.*;
 import com.thesis.gamamicroservices.orderservice.dto.messages.consumed.StockCheckMessage;
@@ -60,7 +59,7 @@ public class OrderService {
     }
 
     public void deleteOrder(String authorizationToken, int id) throws NoDataFoundException {
-        if(orderRepository.existsById(id)) { //evita que tenha de fazer um fetch extra
+        if(orderRepository.existsById(id)) {
             orderRepository.deleteById(id);
         } else {
             throw new NoDataFoundException ("There's no Warehouse with that id");
@@ -76,30 +75,11 @@ public class OrderService {
         for(OrderItemSetDTO orderItemDTO : orderSetDTO.getOrderItems()){
             orderItems.add(new OrderItem(orderItemDTO, getProductById(orderItemDTO.getProductId())));
         }
-        /**
-        try {
-            inventoryService.reserveStock(orderItems);
-        } catch (NoStockException e) {
-            //orderRepository.delete(newOrder); //NAO TA A APAGAR NAO SEI PORQUE
-            //nao será melhor colocar order REJECTED no state?
-            throw e;
-        }**/
 
         newOrder.setAllOrderItems(orderItems);
         Shipping shipping = new Shipping(shippingService.calculateShippingValue(newOrder.getTotalWeight(), orderSetDTO.getCountry()), "notes", orderSetDTO.getAddress(), orderSetDTO.getCountry());
         newOrder.addShippingToOrder(shipping);
         orderRepository.save(newOrder);
-        //System.out.println("order saved");
-
-        //rabbit convert and send
-        /**
-        String orderJson = null;
-        try {
-            orderJson = objectWriter.writeValueAsString(new OrderForStockCheckMessage(newOrder));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        **/
         rabbitTemplate.convertAndSend(ordersExchange.getName(), RoutingKeys.ORDER_CREATED.getNotation(), new OrderCreatedMessage(newOrder));
 
     }
@@ -132,33 +112,6 @@ public class OrderService {
             orderRepository.save(o);
             rabbitTemplate.convertAndSend(ordersExchange.getName(), RoutingKeys.ORDER_UPDATED.getNotation(), new OrderStatusUpdateMessage(o));
         }
-
-
-
-/**
-        if(stockAvailable[1]==1) {
-            String orderJson = null;
-            try {
-                orderJson = objectWriter.writeValueAsString(new OrderConfirmedMessage(o));
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-            //rabbitTemplate.convertAndSend(orderPriceExchange.getName(), "order", orderJson);
-            rabbitTemplate.convertAndSend(ordersExchange.getName(), RoutingKeys.ORDER_CONFIRMED.getNotation(), new OrderConfirmedMessage(o));
-        }
-
-        //para a orderView
-        String orderJson = null;
-        try {
-            orderJson = objectWriter.writeValueAsString(o);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        rabbitTemplate.convertAndSend(exchange.getName(), RoutingKeys.CREATED.getNotation(), orderJson); //erro de recursao infinita por order ter order items e order items ter order
-
-
-**/
     }
 
 
@@ -170,7 +123,7 @@ public class OrderService {
     }
 
 
-    //scheduled job calls this method if order hasnt been approved for 24 horus
+    //scheduled job calls this method if order hasnt been approved for 24 hours
     public void expireOrder(int orderId) throws NoDataFoundException {
         Order order = getOrderById(orderId);
         order.setOrderStatus(OrderStatus.EXPIRED);

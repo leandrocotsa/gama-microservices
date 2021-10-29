@@ -22,8 +22,6 @@ public class ShippingReferenceValue {
     private Double costPerkg;
     private String country;
 
-
-    //para evitar ter construtor sem id explicitio podia criar uma superclass entity que so tinha id e todas as entities extendem e o all args ja funciona sem id
     public ShippingReferenceValue(Double costPerkg, String country) {
         this.costPerkg = costPerkg;
         this.country = country;

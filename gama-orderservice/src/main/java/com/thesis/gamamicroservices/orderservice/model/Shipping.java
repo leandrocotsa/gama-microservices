@@ -23,7 +23,6 @@ public class Shipping {
     private Order order;
     private String country;
     private String address;
-    //nao tenho objeto address pq nao o tenho aqui e porque se um user for apagado quero na mesma ter a order com os dados certinhos, e o address tem cascade com user
 
     public Shipping(Double cost, String notes, String address, String country) {
         this.cost = cost;

@@ -33,7 +33,6 @@ public class Order {
     private int userId;
     private String email;
 
-    //tem que ter address, os address do user so servem para dar para escolher um desses mas tem que haver um associado à order pq o user pode ter varios
     @OneToOne(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     private Shipping shipping;
 
@@ -51,14 +50,6 @@ public class Order {
         this.orderItems = new ArrayList<>();
     }
 
-    /**
-    public Order(ShoppingCart shoppingCart, User user) {
-        this.buyDate = new Date(Calendar.getInstance().getTimeInMillis());
-        this.orderStatus = OrderStatus.PENDING;
-        this.user = user;
-    }
-
-**/
 
     public void setAllOrderItems(List<OrderItem> orderItems) {
         Double sumPrice = 0.0;

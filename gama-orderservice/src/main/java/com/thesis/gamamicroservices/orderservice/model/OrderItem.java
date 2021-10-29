@@ -21,11 +21,11 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private int qty;
-    private double priceAtBuyTime; //sou eu que incializo com product.getPrice
+    private double priceAtBuyTime; //initialized with product.getPrice
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;
-    //podia ter referencia à replica mas se o produto fosse apagado perdia toda a informação de que artigo foi comprado
+    //could have ref to replica but if product gets deleted I'd lose all info about that product that was bought
     /**
     @ManyToOne
     @JoinColumn(name = "product_id")
