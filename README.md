@@ -1,8 +1,7 @@
 # Microservices-based & message-driven e-commerce platform
 
 This is the source code for a test application built for the purpose of my master's dissertation. 
-This is one out of 3 different versions of the same application built for research purposes. One features a microservices-based architecture and a message-driven 
-approach (this repository), other a direct synchronous inter-service communication ([link](https://github.com/leandrocosta16/gama-microservices-direct)), and other following a monolithic approach (link).
+This is one out of 3 different versions of the same application built for research purposes. This one features a microservices-based architecture and a message-driven approach, other is also microservices-based but with a direct synchronous inter-service communication ([link](https://github.com/leandrocosta16/gama-microservices-direct)), and the last one follows a monolithic approach (link).
 
 Several typical microservices patterns, such as CQRS, database-per-service, 
 Saga Transactions, and more were implemented. This version features a message-driven approach, 
