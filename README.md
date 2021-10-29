@@ -48,7 +48,7 @@ The main business services were built using Java and Spring Boot version `2.4.4`
 
 The next image represents an overview of the architecture of the main application stack, with the main business services.
 
-![archietcture overview](https://raw.githubusercontent.com/leandrocosta16/gama-microservices/main/imgs/arch-overview.JPG?token=AKMPBABAKAS7552J4GCYS7LBPQNIW)
+![archietcture overview](https://raw.githubusercontent.com/leandrocosta16/gama-microservices/main/imgs/arch-overview.JPG?token=AKMPBABHHHBLLLUINCGSXQTBPQOPU)
 
 ## Requirements
 
