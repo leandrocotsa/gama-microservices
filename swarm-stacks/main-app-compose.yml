@@ -1,0 +1,189 @@
+version: "3.3"
+services:
+
+    mysql-service:
+      ports:
+        - "3306:3306"
+      image: yobasystems/alpine-mariadb:10.4.17
+      environment:
+        MYSQL_ROOT_PASSWORD: '1234root' # TODO: Change this
+        MYSQL_PASS: '1234root'
+      volumes:
+        - /mnt/mysql-data:/var/lib/mysql # path para disco do glusterFS
+      networks:
+        - docker-network
+
+
+
+    rabbitmq-service:
+      image: rabbitmq:3.8.19-management
+      ports:
+          - 5672:5672
+          - 15672:15672
+      volumes:
+          - ~/volumes/rabbitmq-volume/data/:/var/lib/rabbitmq/ # path para disco do glusterFS
+          - ~/volumes/rabbitmq-volume/log/:/var/log/rabbitmq # path para disco do glusterFS
+      networks:
+        - docker-network
+
+    api-gateway:
+      image: leandrocosta1614/gama-apigateway:latest
+      ports:
+          - 8080:8080
+      deploy:
+        replicas: 1
+        update_config:
+          parallelism: 2
+          delay: 10s
+        restart_policy:
+          condition: on-failure
+      networks:
+          - docker-network
+
+    product-service:
+      image: leandrocosta1614/gama-product-service:latest
+      depends_on:
+        - rabbitmq-service
+      deploy:
+        replicas: 1
+        update_config:
+          parallelism: 2
+          delay: 10s
+        restart_policy:
+          condition: on-failure
+      networks:
+          - docker-network
+
+    order-service:
+      image: leandrocosta1614/gama-order-service:latest
+      depends_on:
+        - rabbitmq-service
+      deploy:
+        replicas: 1
+        update_config:
+          parallelism: 2
+          delay: 10s
+        restart_policy:
+          condition: on-failure
+      networks:
+          - docker-network
+
+    inventory-service:
+      image: leandrocosta1614/gama-inventory-service:latest
+      depends_on:
+        - rabbitmq-service
+      deploy:
+        replicas: 1
+        update_config:
+          parallelism: 2
+          delay: 10s
+        restart_policy:
+          condition: on-failure
+      networks:
+          - docker-network
+
+    review-service:
+      image: leandrocosta1614/gama-review-service:latest
+      depends_on:
+        - rabbitmq-service
+      deploy:
+        replicas: 1
+        update_config:
+          parallelism: 2
+          delay: 10s
+        restart_policy:
+          condition: on-failure
+      networks:
+          - docker-network
+
+    shoppingcart-service:
+      image: leandrocosta1614/gama-shoppingcart-service:latest
+      depends_on:
+        - rabbitmq-service
+      deploy:
+        replicas: 1
+        update_config:
+          parallelism: 2
+          delay: 10s
+        restart_policy:
+          condition: on-failure
+      networks:
+          - docker-network
+
+    user-service:
+      image: leandrocosta1614/gama-user-service:latest
+      depends_on:
+        - rabbitmq-service
+      deploy:
+        replicas: 1
+        update_config:
+          parallelism: 2
+          delay: 10s
+        restart_policy:
+          condition: on-failure
+      networks:
+          - docker-network
+
+    promotion-service:
+      image: leandrocosta1614/gama-promotion-service:latest
+      depends_on:
+        - rabbitmq-service
+      deploy:
+        replicas: 1
+        update_config:
+          parallelism: 2
+          delay: 10s
+        restart_policy:
+          condition: on-failure
+      networks:
+          - docker-network
+
+    payment-service:
+      image: leandrocosta1614/gama-payment-service:latest
+      depends_on:
+        - rabbitmq-service
+      deploy:
+        replicas: 1
+        update_config:
+          parallelism: 2
+          delay: 10s
+        restart_policy:
+          condition: on-failure
+      networks:
+          - docker-network
+
+    products-view:
+      image: leandrocosta1614/gama-products-view:latest
+      depends_on:
+        - rabbitmq-service
+      deploy:
+        replicas: 1
+        update_config:
+          parallelism: 2
+          delay: 10s
+        restart_policy:
+          condition: on-failure
+      networks:
+          - docker-network
+
+    users-orders-view:
+      image: leandrocosta1614/gama-users-orders-view:latest
+      depends_on:
+        - rabbitmq-service
+      deploy:
+        replicas: 1
+        update_config:
+          parallelism: 2
+          delay: 10s
+        restart_policy:
+          condition: on-failure
+      networks:
+          - docker-network
+    
+
+networks:
+  docker-network:
+    driver: overlay
+    attachable: true
+
+  
