@@ -49,7 +49,7 @@ To further promote high-availability, GlusterFS was installed on each one of the
 
 The next image represents an overview of the architecture of the main application stack, with the main business services.
 
-![archietcture overview](https://raw.githubusercontent.com/leandrocosta16/gama-microservices/main/imgs/arch-overview.JPG)
+![archietcture overview](https://raw.githubusercontent.com/leandrocosta16/gama-microservices/main/imgs/nodes-diagram.jpg)
 
 ## Requirements
 
