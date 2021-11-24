@@ -59,6 +59,11 @@ The following image represents an overview of the architecture. Each node is rep
 
 Regarding the communication infrastructure, the defined queues and exchanges are represented in the following chart.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/leandrocosta16/gama-microservices/main/imgs/queues-flow.jpg" width="550" />
+</p>
+
+
 ## Requirements
 
 This platform was built for a Docker Swarm cluster composed of Raspberry pi 4 single-board computers, which features a special type of processor architecture. 
@@ -96,11 +101,27 @@ The services related to observability that offer a visual interface can be direc
 
 ### Grafana
 
-It is possible to monitor the several services distributed across the nodes through the Grafana dashboard. The metrics collected from Prometehus provide information related to CPU, memory, network usage and much more. The dashaboard is accessible through port `:3000`.
+It is possible to monitor the several services distributed across the nodes through the Grafana dashboard. The metrics collected from Prometehus provide information related to CPU, memory, network usage and much more. The dashboard is accessible through port `:3000`.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/leandrocosta16/gama-microservices/main/imgs/grafana.jpg" width="900" />
 </p>
 
 ### Zipkin
+
+In order to aggregate the tracing data from all services in one same place for an overall visualization, Zipkin was used, which manages the collected data and provides a search interface. The outputs from service calls, after Spring Sleuth adds the necessary metadata, are sent over to the Zipkin server via HTTP. Inside Zipkin's UI it is possible to visualize the several spanned components and extra metrics such as the time spent in each service, which could be useful to identify potential performance bottlenecks. The visual interface is accessible from any of the nodes through port `:9411`.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/leandrocosta16/gama-microservices/main/imgs/zipkin-trace.png" width="900" />
+</p>
+
+### Portainer
+
+Portain porvides a graphical overview of the running tasks and how they are distributed across the physical instances at a given time. Through the graphical interface it is possible to have a general overview of the running cluster, start and stop containers, check the running instances and its distribution and even scale them. This service is accessible through port `:9000`
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/leandrocosta16/gama-microservices/main/imgs/portainer.jpg" width="900" />
+</p>
+
+
 
