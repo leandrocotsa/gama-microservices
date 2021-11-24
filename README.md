@@ -8,6 +8,10 @@ Saga Transactions, and more were implemented. This version features a message-dr
 using RabbitMQ as the message broker, making the services completely unaware of each other, 
 promoting fault isolation and loose coupling.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/leandrocosta16/gama-microservices/main/imgs/zipkin.gif" width="600" />
+</p>
+
 
 ## Stacks
 
@@ -47,14 +51,23 @@ To further promote high-availability, GlusterFS was installed on each one of the
   
 ## Architecture
 
-The next image represents an overview of the architecture of the main application stack, with the main business services.
+The following image represents an overview of the architecture. Each node is represented as a vertical rectangle and the Docker Swarm stacks as horizontal rectangles.
 
-<img src="https://raw.githubusercontent.com/leandrocosta16/gama-microservices/main/imgs/nodes-diagram.jpg" width="700" />
+<p align="center">
+  <img src="https://raw.githubusercontent.com/leandrocosta16/gama-microservices/main/imgs/nodes-diagram.jpg" width="650" />
+</p>
+
+Regarding the communication infrastructure, the defined queues and exchanges are represented in the following chart.
 
 ## Requirements
 
-This platform was built for a Docker Swarm cluster of Raspberry pi 4, which features a special type of processor architecture. 
+This platform was built for a Docker Swarm cluster composed of Raspberry pi 4 single-board computers, which features a special type of processor architecture. 
 This means that the built docker images (available in Docker Hub) are not compatible with the typical AMD64 architectures. 
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/leandrocosta16/gama-microservices/main/imgs/setup.jpg" width="350" />
+</p>
+
 In the context of a cluster of Raspberry Pi, once a swarm cluster is created and this repository is cloned run these commands inside this repository's
 folder on the master node to deploy and initialize each of the stacks:
 
@@ -73,4 +86,21 @@ docker build -t <image-name>
 The `<image-name>` should replace the image name present in the `main-app-compose.yml` of the corresponding service. Then you can deploy the main application stack 
 using `docker stack deploy --compose-file main-app-compose.yml gama`.
 
+## Utilization
+
+The collection of the available endpoints realted to the business operations is available here: link.
+
+All the business logic-related requests go through the API Gateway component which is reachable through any of the nodes that compsoe the cluster. 
+
+The services related to observability that offer a visual interface can be directly accessed:
+
+### Grafana
+
+It is possible to monitor the several services distributed across the nodes through the Grafana dashboard. The metrics collected from Prometehus provide information related to CPU, memory, network usage and much more. The dashaboard is accessible through port `:3000`.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/leandrocosta16/gama-microservices/main/imgs/grafana.jpg" width="900" />
+</p>
+
+### Zipkin
 
